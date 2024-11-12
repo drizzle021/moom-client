@@ -112,7 +112,7 @@ export abstract class SocketManager implements SocketManagerContract {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     socket.on('connect_error', (err: Error & { data?: any }) => {
       if (DEBUG) {
-        console.error(`${this.namespace} [connect_error]`, err.message, err.data)
+        console.error(`${this.namespace} [connect_error]`, err.message, err.data, err)
       }
 
       if (err.data?.status === 401) {

@@ -25,13 +25,14 @@ function state(): ExampleStateInterface {
     channelList: [],
     memberList: [],
     loggedInProfile: {  
+      id: 1,
       name: 'firstname',
       surname: 'lastname',
       nickname: 'username',
       email: 'email@abc.com',
       status: 'hello!',
-      icon: 'src/assets/kotori.jpg',
-      state: 'online'
+      icon: 'src/assets/kotori.jpg'
+      // state: 'online'
     }
   }
 }

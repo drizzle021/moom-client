@@ -12,7 +12,7 @@
       <q-avatar icon="tag" class="q-ml-lg" />
 
       <q-toolbar-title>
-        {{ selectedChannel == null ? '' : selectedChannel.name }}
+        {{ activeChannel }}
       </q-toolbar-title>
 
       <q-btn dense flat round icon="account_circle" @click="openProfile" />
@@ -39,13 +39,13 @@ import SettingsMenu from 'src/components/SettingsMenu.vue'
 export default defineComponent({
   name: 'NavBar',
   components: { SettingsMenu },
-
-  setup() {
-    return {
+  props: {
+    activeChannel: {
+      type: String
     }
-
-
   },
+
+
   computed: {
     loggedInProfile: {
       get() {

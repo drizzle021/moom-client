@@ -9,8 +9,12 @@ import {
 
 import ui from './ui'
 import auth from './auth'
+import channels from './channels'
+
 import { ExampleStateInterface } from './ui/state'
 import type { AuthStateInterface } from './auth/state'
+import { ChannelsStateInterface } from './channels/state'
+
 
 // import example from './module-example'
 // import { ExampleStateInterface } from './module-example/state';
@@ -31,6 +35,7 @@ export interface StateInterface {
   example: unknown;
   ui: ExampleStateInterface
   auth: AuthStateInterface
+  channels: ChannelsStateInterface
 }
 
 // provide typings for `this.$store`
@@ -49,7 +54,8 @@ export default store(function (/* { ssrContext } */) {
     modules: {
       // example
       ui,
-      auth
+      auth,
+      channels
     },
 
     // enable strict mode (adds overhead!)

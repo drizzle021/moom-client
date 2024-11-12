@@ -13,7 +13,7 @@
               <q-separator />
               <q-tab-panels v-model="tab" class="background-light">
                 <q-tab-panel name="login" style="min-width: 400px;max-width:400px">
-                  <q-form>
+                  <q-form ref="form">
                     <div class="q-gutter-y-sm q-mt-lg">
                       <label class="q-mb-xs "> EMAIL <span class="required-asterisk">*</span> </label>
                       <q-input v-model="credentials.email" type="email" bg-color="white" borderless />
@@ -23,7 +23,7 @@
                       <q-input v-model="credentials.password" type="password" bg-color="white" borderless />
                     </div>
                     <div class="row flex-center q-my-md">
-                      <q-btn type="submit" text-color="white" class="bg-primary" @click="onSubmit"> Log In </q-btn>
+                      <q-btn text-color="white" class="bg-primary" :loading="loading" @click="onSubmit"> Log In </q-btn>
                     </div>
                   </q-form>
                 </q-tab-panel>
@@ -69,7 +69,7 @@ export default defineComponent({
 
   methods: {
     onSubmit() {
-      this.$store.dispatch('auth/register', this.credentials).then(() => this.$router.push(this.redirectTo))
+      this.$store.dispatch('auth/login', this.credentials).then(() => this.$router.push(this.redirectTo))
     }
   }
 })

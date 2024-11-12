@@ -19,9 +19,9 @@ const mutation: MutationTree<ExampleStateInterface> = {
   switchUserProfile(state:ExampleStateInterface, user){
     state.userProfileSelected = user
   },
-  switchUserState(state:ExampleStateInterface, userState){
-    state.loggedInProfile.state = userState
-  },
+  // switchUserState(state:ExampleStateInterface, userState){
+  //   state.loggedInProfile.state = userState
+  // },
 
   addChannel(state:ExampleStateInterface, channel){
     state.channelList.unshift({
@@ -42,7 +42,7 @@ const mutation: MutationTree<ExampleStateInterface> = {
           state.selectedChannel = state.channelList[0]
         }
         
-      }
+      } 
 
     }
 

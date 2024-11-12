@@ -6,7 +6,7 @@ export interface ApiToken {
   }
   
   export interface RegisterData {
-    name:string,
+    name: string,
     surname: string,
     nickname: string;
     email: string,
@@ -23,20 +23,13 @@ export interface ApiToken {
   }
 
   export interface User {
-    name:string,
-    surname: string,
-    nickname: string;
+    id: number,
     email: string,
-    status: string;
-    icon: string;
-    state: string;
+    name: string,
+    surname: string,
+    nickname: string,
+    status: string,
+    icon: string,
   }
   
-  
- /*  export interface User {
-    id: number
-    email: string
-    createdAt: string,
-    updatedAt: string
-  } */
  

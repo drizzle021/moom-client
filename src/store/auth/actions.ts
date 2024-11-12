@@ -5,10 +5,15 @@ import { authService, authManager } from 'src/services'
 import { LoginCredentials, RegisterData } from 'src/contracts'
 
 const actions: ActionTree<AuthStateInterface, StateInterface> = {
-  async check ({ commit }) {
+  async check ({ state, commit, dispatch }) {
     try {
       commit('AUTH_START')
       const user = await authService.me()
+      // join user to general channel - hardcoded for now
+      if (user?.id !== state.user?.id) {
+        await dispatch('channels/join', 'general', { root: true })
+      }
+
       commit('AUTH_SUCCESS', user)
       return user !== null
     } catch (err) {
@@ -40,11 +45,13 @@ const actions: ActionTree<AuthStateInterface, StateInterface> = {
       throw err
     }
   },
-  async logout ({ commit }) {
+  async logout ({ commit, dispatch }) {
     try {
       commit('AUTH_START')
       await authService.logout()
+      await dispatch('channels/leave', null, { root: true })
       commit('AUTH_SUCCESS', null)
+
       // remove api token and notify listeners
       authManager.removeToken()
     } catch (err) {

@@ -10,19 +10,19 @@
           </q-item-section>
         </q-item>
 
-        <q-item v-for="channel in channelList" :key="channel.name" v-bind="channel" clickable
-          @click="channelClick(channel)">
+        <q-item v-for="(channel, index) in channels" :key="index" clickable
+          @click="setActiveChannel(channel)">
           <q-item-section>
-            <q-avatar v-if="channel.icon == ''" size="60px" color="secondary" text-color="white">
-              {{ channel.name[0] }}
+            <q-avatar size="60px" color="secondary" text-color="white">
+              {{ channel[0] }}
             </q-avatar>
-            <q-avatar v-else size="60px">
+            <!-- <q-avatar v-else size="60px">
               <img :src="channel.icon">
-            </q-avatar>
+            </q-avatar> -->
 
             <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" transition-show="fade"
               transition-duration="400" class="text-body1">
-              {{ channel.name }}
+              {{ channel }}
             </q-tooltip>
           </q-item-section>
 
@@ -69,6 +69,7 @@
 import { defineComponent, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import ChannelMenu from './ChannelMenu.vue'
+import { mapGetters, mapMutations } from 'vuex'
 
 
 
@@ -78,6 +79,8 @@ import ChannelMenu from './ChannelMenu.vue'
 export default defineComponent({
   name: 'ChannelsDrawer',
   components: { ChannelMenu },
+
+
   setup() {
     const $q = useQuasar()
 
@@ -111,6 +114,11 @@ export default defineComponent({
   },
 
   computed: {
+    ...mapGetters('channels', {
+      channels: 'joinedChannels',
+      lastMessageOf: 'lastMessageOf'
+    }),
+
     channelsDrawerState: {
       get() {
         return this.$store.state.ui.channelsDrawerState
@@ -132,6 +140,10 @@ export default defineComponent({
 
 
   methods: {
+    ...mapMutations('channels', {
+      setActiveChannel: 'SET_ACTIVE'
+    }),
+
 
     addChannel() {
       // ADD PROPER VERIFICATION OF NAMES AND INFORM THE USER

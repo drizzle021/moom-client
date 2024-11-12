@@ -98,6 +98,7 @@ export default defineComponent({
   },
 
   computed: {
+    
     membersDrawerState: {
       get() {
         return this.$store.state.ui.membersDrawerState
