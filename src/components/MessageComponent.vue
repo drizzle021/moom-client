@@ -1,8 +1,9 @@
 <template>
-  <q-item :class="message.text.includes('@' + this.loggedInProfile.name) ? 'msg hovered mentioned' : 'msg hovered'">
+  <q-item :class="text.includes('@' + currentUser?.nickname) ? 'msg hovered mentioned' : 'msg hovered'">
     <q-item-section side>
       <q-avatar size="50px">
-        <img src={{ author.icon }} />
+        {{ author.nickname[0] }}
+        <!-- <img src={{ author?.icon }} /> -->
       </q-avatar>
     </q-item-section>
     <q-item-section>
@@ -28,12 +29,9 @@ export default defineComponent({
   },
 
   computed: {
-    loggedInProfile: {
-      get() {
-        return this.$store.state.ui.loggedInProfile
-      }
+    currentUser() {
+      return this.$store.state.auth.user
     }
-
 
 
   }

@@ -13,40 +13,13 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.userProfileState = !state.userProfileState
   },
   
-  switchChannel(state:ExampleStateInterface, channel){
-    state.selectedChannel = channel
-  },
+
   switchUserProfile(state:ExampleStateInterface, user){
     state.userProfileSelected = user
   },
   // switchUserState(state:ExampleStateInterface, userState){
   //   state.loggedInProfile.state = userState
   // },
-
-  addChannel(state:ExampleStateInterface, channel){
-    state.channelList.unshift({
-      name: channel.name,
-      icon: channel.icon,
-      is_private: channel.is_private 
-      // link: ''
-      }
-    )
-
-  },
-  deleteChannel(state:ExampleStateInterface, channel){
-    if (channel !== null){
-      const channelIndex = state.channelList.findIndex(ch => ch.name === channel)
-      if (channelIndex !== -1) {
-        state.channelList.splice(channelIndex, 1) // Remove channel from list
-        if (channel === state.selectedChannel!.name){
-          state.selectedChannel = state.channelList[0]
-        }
-        
-      } 
-
-    }
-
-  },
 
   addMember(state:ExampleStateInterface, user){
     state.memberList.push(user)

@@ -1,4 +1,4 @@
-import { SerializedMessage } from 'src/contracts'
+import { SerializedMessage, Channel } from 'src/contracts'
 import { MutationTree } from 'vuex'
 import { ChannelsStateInterface } from './state'
 
@@ -30,6 +30,9 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     { channel, message }: { channel: string; message: SerializedMessage }
   ) {
     state.messages[channel].push(message)
+  },
+  NEW_CHANNEL (state, channel: Channel) {
+    state.channels.push(channel)
   }
 }
 

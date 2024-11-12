@@ -1,32 +1,17 @@
 <template>
-    <q-btn 
-          dense 
-          flat 
-          round 
-          icon="settings" 
-        >
-        <q-menu>
-        <div class="row no-wrap q-pa-md">
-          <div class="column">
-            <div class="text-h6 q-mb-md">Settings</div>
-            <q-toggle v-model="notification" label="Notifications only addressed to me"/>
-            <q-option-group
-                :options="options"
-                type="radio"
-                v-model="state"
-             />
-            <q-btn
-              color="primary"
-              label="Logout"
-              size="md"
-              v-close-popup
-              @click="logoutUser"
-            />
-          </div>
+  <q-btn dense flat round icon="settings">
+    <q-menu>
+      <div class="row no-wrap q-pa-md">
+        <div class="column">
+          <div class="text-h6 q-mb-md">Settings</div>
+          <q-toggle v-model="notification" label="Notifications only addressed to me" />
+          <q-option-group :options="options" type="radio" v-model="state" />
+          <q-btn color="primary" label="Logout" size="md" v-close-popup @click="logout" />
         </div>
-      </q-menu>
-      
-      </q-btn>
+      </div>
+    </q-menu>
+
+  </q-btn>
 </template>
 
 <script>
@@ -37,6 +22,7 @@
 import { defineComponent, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'src/store'
+import { mapActions } from 'vuex'
 
 export default defineComponent({
     name: 'SettingsMenu',
@@ -46,9 +32,6 @@ export default defineComponent({
       const router = useRouter();
 
       // logout abd redirect user to login page
-      const logoutUser = () => {
-        router.push('/auth/login'); 
-      }
       const store = useStore()
       const currentUserState = store.state.ui.loggedInProfile.state
       
@@ -61,9 +44,12 @@ export default defineComponent({
         { label: 'Do not Disturb', value: 'dnd', color: 'red' },
         { label: 'Offline', value: 'offline', color: 'grey' }
         ],
-        logoutUser,
         currentUserState
       }
+    },
+
+    methods:{
+      ...mapActions('auth', ['logout']),
     },
 
     watch:{

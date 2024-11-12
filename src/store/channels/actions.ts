@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex'
 import { StateInterface } from '../index'
 import { ChannelsStateInterface } from './state'
 import { channelService } from 'src/services'
-import { RawMessage } from 'src/contracts'
+import { RawMessage, User } from 'src/contracts'
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   async join({ commit }, channel: string) {
@@ -26,11 +26,20 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     })
   },
   async addMessage(
+    
     { commit },
     { channel, message }: { channel: string; message: RawMessage }
   ) {
+    
     const newMessage = await channelService.in(channel)?.addMessage(message)
+    
     commit('NEW_MESSAGE', { channel, message: newMessage })
+  },
+
+  async createChannelAction ({ commit }, channel: { name: string, admin: User, is_private: boolean }) {
+    const newChannel = await channelService.addChannel(channel)
+
+    commit('NEW_CHANNEL', { channel: newChannel })
   }
 }
 

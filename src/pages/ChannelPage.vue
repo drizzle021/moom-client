@@ -1,12 +1,13 @@
 <template>
   <q-page class='column justify-end' ref='messagesContainer'>
     <q-infinite-scroll reverse @load='onLoad' :offset='100'>
-      <template v-slot:loading>
+      <!-- <template v-slot:loading>
         <div class='row justify-center q-my-md'>
           <q-spinner color='primary' size='40px' />
         </div>
-      </template>
-      <MessageComponent v-for='message in messages' :key='message.id' :text='[message.message]' :author='message.author'/>
+      </template> -->
+      <MessageComponent v-for='message in messages' :key='message.id' :text='message.content'
+        :author='message.author' />
     </q-infinite-scroll>
   </q-page>
 
@@ -22,15 +23,15 @@ import { defineComponent, nextTick, ref } from 'vue'
 export default defineComponent({
   components: { MessageComponent },
   name: 'ChannelPage',
-  
+
   data() {
     return {
       page: 1
-    } 
+    }
   },
 
   computed: {
-    messages(): SerializedMessage[]{
+    messages(): SerializedMessage[] {
       return this.$store.getters['channels/currentMessages']
     }
   },
@@ -77,7 +78,7 @@ export default defineComponent({
 
   },
 
-  mounted(){
+  mounted() {
     // Scroll to the bottom when the component is mounted
     nextTick(() => {
       this.scrollToBottom()
@@ -87,4 +88,3 @@ export default defineComponent({
 })
 
 </script>
-

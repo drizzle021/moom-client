@@ -10,8 +10,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item v-for="(channel, index) in channels" :key="index" clickable
-          @click="setActiveChannel(channel)">
+        <q-item v-for="(channel, index) in channels" :key="index" clickable @click="setActiveChannel(channel)">
           <q-item-section>
             <q-avatar size="60px" color="secondary" text-color="white">
               {{ channel[0] }}
@@ -41,7 +40,7 @@
         <div class="text-h6">Enter Channel name</div>
       </q-card-section>
 
-      <q-form @submit.prevent="addChannel">
+      <q-form @submit.prevent="joinChannel">
         <q-card-section class="q-pt-none">
           <q-input dense v-model="channelName" autofocus @keyup.enter="addChannelDialog = false" />
         </q-card-section>
@@ -69,7 +68,7 @@
 import { defineComponent, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import ChannelMenu from './ChannelMenu.vue'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 
 
@@ -135,36 +134,34 @@ export default defineComponent({
       get() {
         return this.$store.state.ui.selectedChannel
       }
+    },
+    currentUser() {
+      return this.$store.state.auth.user
     }
+
+
   },
 
 
   methods: {
+
+    async joinChannel() {
+      this.loading = true
+
+      await this.createChannelAction({ name: this.channelName, admin: this.currentUser, is_private: this.publicity })
+
+      this.channelName = ''
+      this.loading = false
+    },
+
     ...mapMutations('channels', {
       setActiveChannel: 'SET_ACTIVE'
     }),
 
 
-    addChannel() {
-      // ADD PROPER VERIFICATION OF NAMES AND INFORM THE USER
-      // HIGHLIGHT WHEN ADDED
-      if (this.channelName.trim() !== '') {
-        console.log(this.channelName)
-        const channel = {
-          name: this.channelName,
-          // caption: 'first-channel',
-          icon: '',
-          is_private: this.publicity
-          // link: ''
-        }
+    ...mapActions('channels', ['createChannelAction']),
 
-        this.$store.commit('ui/addChannel', channel)
-        this.$store.commit('ui/switchChannel', channel)
-        this.addChannelNotif(this.channelName.trim())
-      }
-      this.channelName = ''
 
-    },
 
     deleteChannel(channel) {
       this.$store.commit('ui/deleteChannel', channel)
