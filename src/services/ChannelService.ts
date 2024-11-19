@@ -23,6 +23,10 @@ class ChannelSocketManager extends SocketManager {
   public loadMessages (): Promise<SerializedMessage[]> {
     return this.emitAsync('loadMessages')
   }
+
+  public addChannel (channel: Channel): Promise<Channel>{
+    return this.emitAsync('addChannel', channel)
+  }
 }
 
 class ChannelService {

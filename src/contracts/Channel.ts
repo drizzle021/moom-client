@@ -2,7 +2,7 @@ import type { User } from 'src/contracts'
 
 export interface Channel {
     name: string;
-    icon: string;
+    picture: string;
     admin: User;
     is_private: boolean;
 }
