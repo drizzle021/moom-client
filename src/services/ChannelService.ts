@@ -1,7 +1,7 @@
 import { RawMessage, SerializedMessage } from 'src/contracts'
 import { BootParams, SocketManager } from './SocketManager'
 import type { Channel, User } from 'src/contracts'
-import { api } from 'src/boot/axios'
+  import { api } from 'src/boot/axios'
 
 
 // creating instance of this class automatically connects to given socket.io namespace
@@ -25,6 +25,7 @@ class ChannelSocketManager extends SocketManager {
   }
 
   public addChannel (channel: Channel): Promise<Channel>{
+    console.log(channel)
     return this.emitAsync('addChannel', channel)
   }
 }
@@ -59,8 +60,7 @@ class ChannelService {
     return this.channels.get(name)
   }
 
-  async addChannel(channel: { name: string, admin: User, is_private: boolean }): Promise<Channel> {
-    console.log(channel.name)
+  async addChannel(channel: { name: string, is_private: boolean }): Promise<Channel> {
     const response = await api.post<Channel>('channels/addChannel', channel)
     return response.data
   }

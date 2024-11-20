@@ -4,7 +4,7 @@ export interface ChannelsStateInterface {
   loading: boolean
   error: Error | null
   messages: { [channel: string]: SerializedMessage[] }
-  active: string | null
+  active: Channel | null
   channels: Channel[]
 }
 

@@ -4,7 +4,7 @@
 
       <q-btn flat @click="toggleChannelsDrawer">
         <q-avatar size="40px" text-color="white" class="q-ml-sm" square>
-          <img src="src\assets\logo.png" alt="logo">
+          <!-- <img src="src\assets\logo.png" alt="logo"> -->
         </q-avatar>
 
       </q-btn>
@@ -12,7 +12,7 @@
       <q-avatar icon="tag" class="q-ml-lg" />
 
       <q-toolbar-title>
-        {{ activeChannel }}
+        {{ activeChannel.name }}
       </q-toolbar-title>
 
       <q-btn dense flat round icon="account_circle" @click="openProfile" />
@@ -34,6 +34,8 @@
 <script>
 import { defineComponent } from 'vue'
 import SettingsMenu from 'src/components/SettingsMenu.vue'
+import { Channel } from 'src/contracts'
+
 
 
 export default defineComponent({
@@ -41,7 +43,7 @@ export default defineComponent({
   components: { SettingsMenu },
   props: {
     activeChannel: {
-      type: String
+      type: Channel
     }
   },
 

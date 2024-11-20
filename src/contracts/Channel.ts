@@ -1,8 +1,8 @@
-import type { User } from 'src/contracts'
+// import type { User } from 'src/contracts'
 
 export interface Channel {
     name: string;
     picture: string;
-    admin: User;
+    admin_id: number;
     is_private: boolean;
 }

@@ -13,7 +13,7 @@
         <q-item v-for="(channel, index) in channels" :key="index" clickable @click="setActiveChannel(channel)">
           <q-item-section>
             <q-avatar size="60px" color="secondary" text-color="white">
-              {{ channel[0] }}
+              {{ channel.name[0] }}
             </q-avatar>
             <!-- <q-avatar v-else size="60px">
               <img :src="channel.icon">
@@ -21,7 +21,7 @@
 
             <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" transition-show="fade"
               transition-duration="400" class="text-body1">
-              {{ channel }}
+              {{ channel.name }}
             </q-tooltip>
           </q-item-section>
 
@@ -114,7 +114,7 @@ export default defineComponent({
 
   computed: {
     ...mapGetters('channels', {
-      channels: 'joinedChannels',
+      channels: ['joinedChannels'],
       lastMessageOf: 'lastMessageOf'
     }),
 
@@ -148,10 +148,11 @@ export default defineComponent({
     async joinChannel() {
       this.loading = true
 
-      await this.createChannelAction({ name: this.channelName, admin: this.currentUser, is_private: this.publicity })
+      await this.createChannelAction({ name: this.channelName, admin_id: this.currentUser.id, is_private: this.publicity })
 
       this.channelName = ''
       this.loading = false
+      console.log(this.channels)
     },
 
     ...mapMutations('channels', {
@@ -175,16 +176,16 @@ export default defineComponent({
       this.$store.commit('ui/switchChannel', element)
 
     }
-  },
+  }
 
   // pull saved channel from store add it to channels and switch to it
-  mounted() {
-    if (this.channelList.length === 0) {
-      this.$store.commit('ui/addChannel', this.selectedChannel)
-      this.$store.commit('ui/switchChannel', this.selectedChannel)
+  // mounted() {
+  //   if (this.channelList.length === 0) {
+  //     this.$store.commit('ui/addChannel', this.selectedChannel)
+  //     this.$store.commit('ui/switchChannel', this.selectedChannel)
 
-    }
-  }
+  //   }
+  // }
 })
 
 
