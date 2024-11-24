@@ -8,11 +8,12 @@
       </q-item-label>
       <q-separator />
 
-      <q-item v-for="member in memberList" :key="member.name" v-bind="member" clickable>
+      <q-item v-for="(member, index) in users" :key="index" v-bind="member" clickable>
 
         <q-item-section side>
-          <q-avatar v-if="member.icon != ''" size="3rem"><img :src="member.icon"></q-avatar>
-          <q-avatar v-else rounded icon="person"></q-avatar>
+          <!-- <q-avatar v-if="member.icon != ''" size="3rem"><img :src="member.icon"></q-avatar> -->
+          <!-- v-else  -->
+          <q-avatar rounded icon="person"></q-avatar>
         </q-item-section>
 
         <q-item-section>
@@ -74,6 +75,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import MemberMenu from 'src/components/Members/MemberMenu.vue'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 
 export default defineComponent({
@@ -98,6 +100,9 @@ export default defineComponent({
   },
 
   computed: {
+    ...mapGetters('channels', {
+      channels: ['joinedMembers']
+    }),
     
     membersDrawerState: {
       get() {
@@ -124,9 +129,13 @@ export default defineComponent({
 
   methods: {
 
-    addMember() {
+    async addMember() {
       // ADD PROPER VERIFICATION OF NAMES AND INFORM THE USER
       if (this.nickname.trim() !== '') {
+
+        await this.addMemberAction({ name: this.nickname })
+
+
         const user = {
           name: this.nickname.trim(),
           status: 'added user',
@@ -141,7 +150,16 @@ export default defineComponent({
 
       this.nickname = ''
 
-    }
+    },
+
+    ...mapMutations('channels', {
+      setActiveChannel: 'SET_ACTIVE'
+    }),
+
+
+    ...mapActions('channels', ['addMemberAction'])
+
+
   },
 
   mounted() {

@@ -1,9 +1,9 @@
 import { ActionTree } from 'vuex'
 import { StateInterface } from '../index'
 import { ChannelsStateInterface } from './state'
-import { channelService } from 'src/services'
-import { RawMessage, User } from 'src/contracts'
-import { api } from 'src/boot/axios'
+import { activityService, channelService } from 'src/services'
+import { RawMessage } from 'src/contracts'
+// import { api } from 'src/boot/axios'
 
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
@@ -48,7 +48,26 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       throw err
     }
 
+  },
+
+  async addMemberAction ({ commit }, user: string) {
+    const newMember = await activityService.inviteUser(user)
+    commit('NEW_MEMBER', { user: newMember })
+    // channel: { name: string, is_private: boolean }, 
+    try {
+      // commit('LOADING_START')
+      // const messages = await channelService.join(channel.name).loadMessages()
+      // commit('LOADING_SUCCESS', { channel, messages })
+      // commit('SET_ACTIVE', channel)
+    } catch (err) {
+      console.log('aaaaaaaaaaaaaa')
+      commit('LOADING_ERROR', err)
+      throw err
+    }
+
   }
+
+
 
   // async getChannels({getters, commit}) {
   //   const joinedChannels = getters.joinedChannels

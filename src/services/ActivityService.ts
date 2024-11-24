@@ -1,6 +1,8 @@
 import { User } from 'src/contracts'
 import { authManager } from '.'
 import { SocketManager } from './SocketManager'
+// import { api } from 'src/boot/axios'
+
 
 class ActivitySocketManager extends SocketManager {
   public subscribe (): void {
@@ -24,6 +26,19 @@ class ActivitySocketManager extends SocketManager {
       }
     })
   }
+  
+  public changeStatus (status: string): Promise<void> {
+    return this.emitAsync('changeStatus', status)
+  }
+
+  // VALOSZINULEG KELL IDE CHANNEL IS NEM CSAK USER STRING
+  public inviteUser (user: string): Promise<void> {
+    // channel: { name: string, is_private: boolean }, 
+    return this.emitAsync('inviteUser', user)
+  }
+
+
+
 }
 
 export default new ActivitySocketManager('/')

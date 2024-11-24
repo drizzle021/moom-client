@@ -8,6 +8,11 @@ const getters: GetterTree<ChannelsStateInterface, StateInterface> = {
     // return Object.keys(context.messages)
     return context.channels
   },
+  currentUsers (context){
+    console.log(context.users)
+    return context.users
+    // return context.active !== null ? context.users[context.active.name] : []
+  },
   currentMessages(context) {
     return context.active !== null ? context.messages[context.active.name] : []
   },

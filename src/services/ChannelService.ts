@@ -1,7 +1,8 @@
 import { RawMessage, SerializedMessage } from 'src/contracts'
 import { BootParams, SocketManager } from './SocketManager'
 import type { Channel, User } from 'src/contracts'
-  import { api } from 'src/boot/axios'
+import { SerializedUser } from 'src/contracts/User'
+import { api } from 'src/boot/axios'
 
 
 // creating instance of this class automatically connects to given socket.io namespace
@@ -13,6 +14,13 @@ class ChannelSocketManager extends SocketManager {
 
     this.socket.on('message', (message: SerializedMessage) => {
       store.commit('channels/NEW_MESSAGE', { channel, message })
+    })
+
+    
+    this.socket.on('userJoined', (user: SerializedUser) => {
+      if (user.id !== store.state.auth.user!.id) {
+        store.commit('channels/USER_JOINED', { channel, user })
+      }
     })
   }
 
@@ -27,6 +35,10 @@ class ChannelSocketManager extends SocketManager {
   public addChannel (channel: Channel): Promise<Channel>{
     console.log(channel)
     return this.emitAsync('addChannel', channel)
+  }
+
+  public joinChannel (channel: string): Promise<Channel> {
+    return this.emitAsync('addUser', channel)
   }
 }
 
@@ -62,6 +74,11 @@ class ChannelService {
 
   async addChannel(channel: { name: string, is_private: boolean }): Promise<Channel> {
     const response = await api.post<Channel>('channels/addChannel', channel)
+    return response.data
+  }
+
+  async addMember(user: string): Promise<User> {
+    const response = await api.post<User>('channels/addMember', user)
     return response.data
   }
 }
