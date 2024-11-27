@@ -2,12 +2,12 @@
   <q-item :class="text.includes('@' + currentUser?.nickname) ? 'msg hovered mentioned' : 'msg hovered'">
     <q-item-section side>
       <q-avatar size="50px">
-        {{ author.nickname[0] }}
+        {{ author.nickname }}
         <!-- <img src={{ author?.icon }} /> -->
       </q-avatar>
     </q-item-section>
     <q-item-section>
-      <q-item-label><b>{{ author.nickname }}</b></q-item-label>
+      <q-item-label><b>{{ author.email }}</b></q-item-label>
       <q-item-label class="message-text">{{ text }}</q-item-label>
     </q-item-section>
   </q-item>

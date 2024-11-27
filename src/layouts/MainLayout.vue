@@ -55,6 +55,9 @@ import MembersDrawer from 'src/components/Members/MembersDrawer.vue'
 import ChannelsDrawer from 'src/components/Channels/ChannelsDrawer.vue'
 import UserProfile from 'src/components/UserProfile.vue'
 import { defineComponent } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+
 
 export default defineComponent({
   name: 'MainLayout',
@@ -85,6 +88,7 @@ export default defineComponent({
   computed: {
     ...mapGetters('channels', {
       channels: 'joinedChannels',
+      users: 'currentUsers',
       lastMessageOf: 'lastMessageOf'
     }),
 
@@ -95,12 +99,24 @@ export default defineComponent({
 
   },
 
+  mounted() {
+    this.getChannels()
+
+  },
 
   methods: {
+    async getChannels(){
+
+      const success = await this.$store.dispatch('channels/getUserChannels', useRoute().params.name)
+      if (!success) {
+        await useRouter().push({ path: '/404' })
+      }
+    },
+
     async send() {
       this.loading = true
-
-      await this.addMessage({ channel: this.activeChannel, message: this.message })
+      console.log(this.activeChannel!.name)
+      await this.addMessage({ channel: this.activeChannel!.name, message: this.message })
       this.message = ''
       this.loading = false
     },

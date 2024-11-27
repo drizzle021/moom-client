@@ -10,7 +10,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item v-for="(channel, index) in channels" :key="index" clickable @click="setActiveChannel(channel)">
+        <q-item v-for="(channel, index) in channels" :key="index" clickable @click="valamimas(channel)">
           <q-item-section>
             <q-avatar size="60px" color="secondary" text-color="white">
               {{ channel.name[0] }}
@@ -144,6 +144,10 @@ export default defineComponent({
 
 
   methods: {
+    async valamimas(channel){
+      await this.selectChannel(channel.name)
+      // this.setActiveChannel(channel.name)
+    },
 
     async joinChannel() {
       this.loading = true
@@ -160,7 +164,7 @@ export default defineComponent({
     }),
 
 
-    ...mapActions('channels', ['createChannelAction']),
+    ...mapActions('channels', ['createChannelAction', 'selectChannel']),
 
 
 

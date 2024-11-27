@@ -10,9 +10,9 @@ const actions: ActionTree<AuthStateInterface, StateInterface> = {
       commit('AUTH_START')
       const user = await authService.me()
       // join user to general channel - hardcoded for now
-      if (user?.id !== state.user?.id) {
-        await dispatch('channels/join', 'general', { root: true })
-      }
+      // if (user?.id !== state.user?.id) {
+      //   await dispatch('channels/join', 'general', { root: true })
+      // }
 
       commit('AUTH_SUCCESS', user)
       return user !== null

@@ -6,7 +6,9 @@
           <q-spinner color='primary' size='40px' />
         </div>
       </template> -->
-      <MessageComponent v-for='message in messages' :key='message.id' :text='message.content'
+      <MessageComponent v-for='message in messages' 
+        :key='message.id' 
+        :text='[message.content]'
         :author='message.author' />
     </q-infinite-scroll>
   </q-page>
@@ -19,6 +21,7 @@
 import MessageComponent from 'src/components/MessageComponent.vue'
 import { SerializedMessage } from 'src/contracts'
 import { defineComponent, nextTick, ref } from 'vue'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default defineComponent({
   components: { MessageComponent },
@@ -31,12 +34,24 @@ export default defineComponent({
   },
 
   computed: {
-    messages(): SerializedMessage[] {
-      return this.$store.getters['channels/currentMessages']
-    }
+    ...mapGetters('channels', {
+      messages: 'currentMessages'
+    })
+
+
+
+    // messages(): SerializedMessage[] {
+    //   return this.$store.getters['channels/currentMessages']
+    // }
   },
 
   methods: {
+    ...mapMutations('channels', {
+      setActiveChannel: 'SET_ACTIVE'
+    }),
+
+
+
     // onLoad(index: number) {
     //   // done: (stop?: boolean) => void
 

@@ -1,12 +1,60 @@
 import { ActionTree } from 'vuex'
+import { AxiosResponse } from 'axios'
 import { StateInterface } from '../index'
 import { ChannelsStateInterface } from './state'
 import { activityService, channelService } from 'src/services'
-import { RawMessage } from 'src/contracts'
-// import { api } from 'src/boot/axios'
+import { RawMessage, ChannelResponse } from 'src/contracts'
+import { api } from 'boot/axios'
 
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
+  
+  async selectChannel ({ state, commit, getters, dispatch }, channel: string) {
+    // if (state.channels.length === 0) {
+    //   commit('SET_SELECTED_CHANNEL', '')
+    //   return
+    // }
+    if (!channel) {
+      return
+    }
+
+    try {
+
+      const channelResponse: ChannelResponse = (await api.get(`/channels/${channel}`)).data
+      const users = channelResponse.users
+
+      const channelResponseMessages: ChannelResponse = (await api.get(`/channels/${channel}/messages`)).data
+      const messages = channelResponseMessages
+      commit('SET_CHANNEL_DATA', { channel: channel, messages, users })
+
+      commit('SET_ACTIVE', channel)
+      console.log('active channel: ' + state.active)
+    } catch (err) {
+      commit('LOADING_ERROR', err)
+      console.log(err)
+
+    }
+  },
+  
+  async getUserChannels ({ commit, dispatch }, channelFromRoute: string): Promise<boolean> {
+    try {
+      const channels = await channelService.getChannel()
+      
+
+      commit('SET_CHANNELS', channels)
+
+      for (const channel of channels) {
+        commit('SET_CHANNEL_DATA', { channel: channel.name, messages: [], users: [] })
+        await channelService.join(channel.name)
+      }
+
+
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+    return true
+  },
   async join({ commit }, channel: string) {
     try {
       commit('LOADING_START')
@@ -67,16 +115,6 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
   }
 
-
-
-  // async getChannels({getters, commit}) {
-  //   const joinedChannels = getters.joinedChannels
-  
-  //   for (const channel of joinedChannels){
-  //     const data = await 
-  //     commit('SET_CHANNEL', {channel, data})
-  //   }
-  // }
 
 }
 

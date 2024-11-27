@@ -17,7 +17,7 @@
         </q-item-section>
 
         <q-item-section>
-          <q-item-label>{{ member.name }}</q-item-label>
+          <q-item-label>{{ member.nickname }}</q-item-label>
           <q-item-label lines="1">{{ member.status }}</q-item-label>
         </q-item-section>
 
@@ -101,7 +101,7 @@ export default defineComponent({
 
   computed: {
     ...mapGetters('channels', {
-      channels: ['joinedMembers']
+      users: ['currentUsers']
     }),
     
     membersDrawerState: {

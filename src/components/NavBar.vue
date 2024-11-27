@@ -12,7 +12,7 @@
       <q-avatar icon="tag" class="q-ml-lg" />
 
       <q-toolbar-title>
-        {{ activeChannel.name }}
+        {{ activeChannel ? activeChannel : '' }}
       </q-toolbar-title>
 
       <q-btn dense flat round icon="account_circle" @click="openProfile" />
