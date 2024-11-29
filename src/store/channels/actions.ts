@@ -1,5 +1,4 @@
 import { ActionTree } from 'vuex'
-import { AxiosResponse } from 'axios'
 import { StateInterface } from '../index'
 import { ChannelsStateInterface } from './state'
 import { activityService, channelService } from 'src/services'
@@ -23,12 +22,16 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       const channelResponse: ChannelResponse = (await api.get(`/channels/${channel}`)).data
       const users = channelResponse.users
 
-      const channelResponseMessages: ChannelResponse = (await api.get(`/channels/${channel}/messages`)).data
-      const messages = channelResponseMessages
+      // console.log(users[7].icon)
+
+      const messages = (await api.get(`/channels/${channel}/messages`)).data.data
+
+      const m = messages.reverse()
+
       commit('SET_CHANNEL_DATA', { channel: channel, messages, users })
 
       commit('SET_ACTIVE', channel)
-      console.log('active channel: ' + state.active)
+      // console.log('active channel: ' + state.active)
     } catch (err) {
       commit('LOADING_ERROR', err)
       console.log(err)
@@ -82,23 +85,27 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     commit('NEW_MESSAGE', { channel, message: newMessage })
   },
 
-  async createChannelAction ({ commit }, channel: { name: string, is_private: boolean }) {
-    const newChannel = await channelService.addChannel(channel)
-    commit('NEW_CHANNEL', { channel: newChannel })
-
+  async createChannel ({ commit, dispatch }, channel: { name: string, is_private: boolean }) {
     try {
+      
       commit('LOADING_START')
+      const newChannel = await channelService.addChannel(channel)
+      commit('NEW_CHANNEL', newChannel)
+
       const messages = await channelService.join(channel.name).loadMessages()
-      commit('LOADING_SUCCESS', { channel, messages })
-      commit('SET_ACTIVE', channel)
+      const name = channel.name
+      commit('LOADING_SUCCESS', { name, messages })
+      // commit('SET_ACTIVE', channel.name)
+      await dispatch('selectChannel', channel.name)
     } catch (err) {
       commit('LOADING_ERROR', err)
       throw err
     }
 
+    
   },
 
-  async addMemberAction ({ commit }, user: string) {
+  async addMember ({ commit }, user: string) {
     const newMember = await activityService.inviteUser(user)
     commit('NEW_MEMBER', { user: newMember })
     // channel: { name: string, is_private: boolean }, 

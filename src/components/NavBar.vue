@@ -4,7 +4,7 @@
 
       <q-btn flat @click="toggleChannelsDrawer">
         <q-avatar size="40px" text-color="white" class="q-ml-sm" square>
-          <!-- <img src="src\assets\logo.png" alt="logo"> -->
+           <img src="~assets/logo.png" alt="logo">
         </q-avatar>
 
       </q-btn>
@@ -34,25 +34,20 @@
 <script>
 import { defineComponent } from 'vue'
 import SettingsMenu from 'src/components/SettingsMenu.vue'
-import { Channel } from 'src/contracts'
-
-
 
 export default defineComponent({
   name: 'NavBar',
   components: { SettingsMenu },
   props: {
     activeChannel: {
-      type: Channel
+      type: String
     }
   },
 
 
   computed: {
-    loggedInProfile: {
-      get() {
-        return this.$store.state.ui.loggedInProfile
-      }
+    currentUser() {
+      return this.$store.state.auth.user
     },
     selectedChannel: {
       get() {
@@ -62,7 +57,7 @@ export default defineComponent({
   },
   methods: {
     openProfile() {
-      this.$store.commit('ui/switchUserProfile', this.loggedInProfile)
+      this.$store.commit('ui/switchUserProfile', this.currentUser)
       this.$store.commit('ui/toggleUserProfile')
     },
     toggleMembersDrawer() {

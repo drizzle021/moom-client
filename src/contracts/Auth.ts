@@ -11,7 +11,7 @@ export interface ApiToken {
     nickname: string;
     email: string,
     status: string;
-    icon: string;
+    icon: File | null;
     password: string;
     passwordConfirmation: string
   }

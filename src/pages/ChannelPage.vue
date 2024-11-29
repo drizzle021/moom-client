@@ -8,7 +8,7 @@
       </template> -->
       <MessageComponent v-for='message in messages' 
         :key='message.id' 
-        :text='[message.content]'
+        :text='message.content'
         :author='message.author' />
     </q-infinite-scroll>
   </q-page>

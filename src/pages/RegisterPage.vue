@@ -41,7 +41,7 @@
                                                 borderless />
                                         </div>
                                         <div class="row flex-center q-my-md">
-                                            <q-file v-model="form.file" label="upload pfp" filled max-files="1"
+                                            <q-file v-model="form.icon" label="upload pfp" filled max-files="1"
                                                 class="q-mx-auto">
                                                 <template v-slot:prepend>
                                                     <q-icon name="attach_file" />
@@ -73,8 +73,7 @@ export default defineComponent({
     name: 'RegisterPage',
     data() {
         return {
-            form: { name: '', nickname: '', surname: '', email: '', password: '', passwordConfirmation: '', file: null },
-            showPassword: false,
+            form: { name: '', nickname: '', surname: '', email: '', password: '', passwordConfirmation: '', icon: null },
             tab: 'register'
         }
     },
@@ -87,9 +86,26 @@ export default defineComponent({
         }
     },
     methods: {
-        onSubmit() {
-            this.$store.dispatch('auth/register', this.form).then(() => this.$router.push(this.redirectTo))
-        }
+        async onSubmit() {
+  const formData = new FormData()
+  formData.append('name', this.form.name)
+  formData.append('surname', this.form.surname)
+  formData.append('nickname', this.form.nickname)
+  formData.append('email', this.form.email)
+  formData.append('password', this.form.password)
+  formData.append('passwordConfirmation', this.form.passwordConfirmation)
+  if (this.form.icon) {
+    formData.append('icon', this.form.icon)
+  }
+
+  try {
+    await this.$store.dispatch('auth/register', formData)
+    this.$router.push(this.redirectTo)
+  } catch (error) {
+    console.error('Registration error:', error)
+  }
+}
+
     }
 })
 </script>

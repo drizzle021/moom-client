@@ -13,7 +13,7 @@
         <q-item v-for="(channel, index) in channels" :key="index" clickable @click="valamimas(channel)">
           <q-item-section>
             <q-avatar size="60px" color="secondary" text-color="white">
-              {{ channel.name[0] }}
+              {{ channel ? (channel.name ? channel.name[0]: '') : '' }}
             </q-avatar>
             <!-- <q-avatar v-else size="60px">
               <img :src="channel.icon">
@@ -152,7 +152,7 @@ export default defineComponent({
     async joinChannel() {
       this.loading = true
 
-      await this.createChannelAction({ name: this.channelName, admin_id: this.currentUser.id, is_private: this.publicity })
+      await this.createChannel({ name: this.channelName, admin_id: this.currentUser.id, is_private: this.publicity })
 
       this.channelName = ''
       this.loading = false
@@ -164,7 +164,7 @@ export default defineComponent({
     }),
 
 
-    ...mapActions('channels', ['createChannelAction', 'selectChannel']),
+    ...mapActions('channels', ['createChannel', 'selectChannel']),
 
 
 

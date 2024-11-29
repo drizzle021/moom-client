@@ -1,13 +1,13 @@
-import { SerializedMessage, Channel } from 'src/contracts'
-import { SerializedUser } from 'src/contracts/User'
+import { SerializedMessage, Channel, User } from 'src/contracts'
+
 
 export interface ChannelsStateInterface {
   loading: boolean
   error: Error | null
   messages: { [channel: string]: SerializedMessage[] }
-  active: Channel | null
+  active: string | null
   channels: Channel[]
-  users: { [channel: string]: SerializedUser[] }
+  users: { [channel: string]: User[] }
   // users: User[]
 }
 

@@ -1,5 +1,5 @@
 import { SerializedMessage } from 'src/contracts/Message'
-import { SerializedUser } from 'src/contracts/User'
+import { User } from 'src/contracts'
 
 export interface Channel {
     name: string;
@@ -10,6 +10,6 @@ export interface Channel {
 
 export interface ChannelResponse extends Channel {
     messages: SerializedMessage[],
-    users: SerializedUser[]
+    users: User[]
   }
   

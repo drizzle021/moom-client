@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh LpR lfr">
-    <NavBar :activeChannel="activeChannel" />
+    <NavBar :activeChannel="activeChannel ? activeChannel : ''" />
 
     <ChannelsDrawer />
 
@@ -88,7 +88,6 @@ export default defineComponent({
   computed: {
     ...mapGetters('channels', {
       channels: 'joinedChannels',
-      users: 'currentUsers',
       lastMessageOf: 'lastMessageOf'
     }),
 
@@ -115,8 +114,8 @@ export default defineComponent({
 
     async send() {
       this.loading = true
-      console.log(this.activeChannel!.name)
-      await this.addMessage({ channel: this.activeChannel!.name, message: this.message })
+      console.log(this.activeChannel)
+      await this.addMessage({ channel: this.activeChannel, message: this.message })
       this.message = ''
       this.loading = false
     },

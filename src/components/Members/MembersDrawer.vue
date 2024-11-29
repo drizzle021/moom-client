@@ -11,9 +11,8 @@
       <q-item v-for="(member, index) in users" :key="index" v-bind="member" clickable>
 
         <q-item-section side>
-          <!-- <q-avatar v-if="member.icon != ''" size="3rem"><img :src="member.icon"></q-avatar> -->
-          <!-- v-else  -->
-          <q-avatar rounded icon="person"></q-avatar>
+          <q-avatar v-if="member.icon" size="3rem"><img :src="member.icon"></q-avatar>
+          <q-avatar v-else rounded icon="person"></q-avatar>
         </q-item-section>
 
         <q-item-section>

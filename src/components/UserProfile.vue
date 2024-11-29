@@ -6,9 +6,10 @@
         <q-item-section avatar>
 
           <div class="image-wrapper">
-            <img :class="loggedInProfile == selectedUser ? 'profile-image file-picker' : 'profile-image'"
-              :src="selectedUser.icon == '' ? 'src/assets/kurumi.jpg' : selectedUser.icon" draggable="false"
-              @click="openFilePicker">
+            <img :class="currentUser.id == selectedUser.id ? 'profile-image file-picker' : 'profile-image'"
+              :src="selectedUser.icon ? selectedUser.icon : require('src/assets/kurumi.jpg')" draggable="false"
+              @click="openFilePicker"
+            >
 
 
             <q-badge class="profile-badge"
@@ -28,8 +29,8 @@
       </q-item>
 
       <q-card-section>
-        <div class="text-h6">{{ this.selectedUser.name }}</div>
-        <div>{{ this.selectedUser.firstName }} {{ this.selectedUser.lastName }} | {{ this.selectedUser.email }}</div>
+        <div class="text-h6">{{ this.selectedUser.nickname }}</div>
+        <div>{{ this.selectedUser.name }} {{ this.selectedUser.surname }} | {{ this.selectedUser.email }}</div>
       </q-card-section>
       <q-card-section>
 
@@ -61,10 +62,8 @@ export default defineComponent({
         return this.$store.state.ui.userProfileSelected
       }
     },
-    loggedInProfile: {
-      get() {
-        return this.$store.state.ui.loggedInProfile
-      }
+    currentUser() {
+      return this.$store.state.auth.user
     }
   },
   methods: {
@@ -72,7 +71,7 @@ export default defineComponent({
       this.$store.commit('ui/toggleUserProfile')
     },
     openFilePicker() {
-      if (this.selectedUser.name === this.loggedInProfile.name) {
+      if (this.selectedUser.name === this.currentUser.name) {
         this.$refs.fileInput.pickFiles()
       }
     },
@@ -81,6 +80,10 @@ export default defineComponent({
         console.log('File selected:', pfp.target.files[0].name)
 
       }
+    },
+    getFullIconUrl(icon) { 
+      const baseUrl = 'http://localhost:3333/uploads'
+      return icon ? `${baseUrl}/${icon}` : null 
     }
   }
 

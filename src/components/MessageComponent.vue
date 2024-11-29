@@ -2,12 +2,11 @@
   <q-item :class="text.includes('@' + currentUser?.nickname) ? 'msg hovered mentioned' : 'msg hovered'">
     <q-item-section side>
       <q-avatar size="50px">
-        {{ author.nickname }}
-        <!-- <img src={{ author?.icon }} /> -->
+        <img :src="author.icon">
       </q-avatar>
     </q-item-section>
     <q-item-section>
-      <q-item-label><b>{{ author.email }}</b></q-item-label>
+      <q-item-label><b>{{ author.nickname }}</b></q-item-label>
       <q-item-label class="message-text">{{ text }}</q-item-label>
     </q-item-section>
   </q-item>
@@ -15,6 +14,8 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { User } from 'src/contracts'
+
 export default defineComponent({
   name: 'MessageComponent',
   props: {
@@ -23,7 +24,7 @@ export default defineComponent({
       required: true
     },
     author: {
-      type: String,
+      type: User,
       required: true
     }
   },
@@ -32,10 +33,17 @@ export default defineComponent({
     currentUser() {
       return this.$store.state.auth.user
     }
+  },
 
-
+  // Ez kell ide mert for some reason nem tudom a backendrol igy elkuldeni egyben
+  // MemberDrawerbe el tudom ugy kuldeni szoval a message gettelessel van baj
+  methods: {
+    getFullIconUrl(icon) { 
+      const baseUrl = 'http://localhost:3333/uploads'
+      return icon ? `${baseUrl}/${icon}` : null 
+    }
   }
-
+ 
 
 })
 </script>

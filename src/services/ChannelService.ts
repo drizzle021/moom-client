@@ -1,7 +1,6 @@
 import { RawMessage, SerializedMessage } from 'src/contracts'
 import { BootParams, SocketManager } from './SocketManager'
 import type { Channel, User } from 'src/contracts'
-import { SerializedUser } from 'src/contracts/User'
 import { api } from 'src/boot/axios'
 import { AxiosResponse } from 'axios'
 
@@ -17,7 +16,7 @@ class ChannelSocketManager extends SocketManager {
     })
 
     
-    this.socket.on('userJoined', (user: SerializedUser) => {
+    this.socket.on('userJoined', (user: User) => {
       if (user.id !== store.state.auth.user!.id) {
         store.commit('channels/USER_JOINED', { channel, user })
       }
@@ -33,7 +32,6 @@ class ChannelSocketManager extends SocketManager {
   }
 
   public addChannel (channel: Channel): Promise<Channel>{
-    console.log(channel)
     return this.emitAsync('addChannel', channel)
   }
 
