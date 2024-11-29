@@ -26,6 +26,8 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
       const messages = (await api.get(`/channels/${channel}/messages`)).data.data
 
+
+      // After getting the messages they come reversed order, so reverse them
       const m = messages.reverse()
 
       commit('SET_CHANNEL_DATA', { channel: channel, messages, users })
