@@ -8,13 +8,14 @@ export interface ExampleStateInterface {
   channelList: Channel[];
   memberList: User[];
   loggedInProfile: User;
+  message: string;
 }
 
 function state(): ExampleStateInterface {
   return {
     membersDrawerState: true,
     channelsDrawerState: true,
-    
+    message: '',
     userProfileState: false,
     userProfileSelected: null,
     channelList: [],

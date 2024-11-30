@@ -38,23 +38,21 @@ class ChannelSocketManager extends SocketManager {
   public joinChannel (channel: string): Promise<Channel> {
     return this.emitAsync('addUser', channel)
   }
+
 }
 
 class ChannelService {
   private channels: Map<string, ChannelSocketManager> = new Map()
 
   public join (name: string): ChannelSocketManager {
-    // EZ AZ ERROR VAN DOBALVA MERT NEM TUDOM HOL KELLENE CHECKOLNI A USERT
-
-    console.log(this.channels)
-
     if (this.channels.has(name)) {
-      
-      // throw new Error(`User is already joined in channel "${name}"`)
+       throw new Error(`User is already joined in channel "${name}"`)
     }
 
     // connect to given channel namespace
+
     const channel = new ChannelSocketManager(`/channels/${name}`)
+
     this.channels.set(name, channel)
     return channel
   }

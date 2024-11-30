@@ -21,7 +21,7 @@
 
             <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" transition-show="fade"
               transition-duration="400" class="text-body1">
-              {{ channel.name }}
+              {{ channel.name }}{{ channel.isPrivate ? "<private>" : "<public>" }}
             </q-tooltip>
           </q-item-section>
 

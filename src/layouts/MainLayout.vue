@@ -94,8 +94,6 @@ export default defineComponent({
     activeChannel() {
       return this.$store.state.channels.active
     }
-
-
   },
 
   mounted() {
@@ -114,7 +112,6 @@ export default defineComponent({
 
     async send() {
       this.loading = true
-      console.log(this.activeChannel)
       await this.addMessage({ channel: this.activeChannel, message: this.message })
       this.message = ''
       this.loading = false

@@ -12,7 +12,10 @@ const mutation: MutationTree<ExampleStateInterface> = {
   toggleUserProfile(state:ExampleStateInterface){
     state.userProfileState = !state.userProfileState
   },
-  
+
+  setMessage(state:ExampleStateInterface, message){
+    state.message = message
+  },
 
   switchUserProfile(state:ExampleStateInterface, user){
     state.userProfileSelected = user

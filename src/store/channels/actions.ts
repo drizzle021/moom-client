@@ -81,22 +81,18 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     
   },
 
-  async joinChannel({ commit }, channel: string) {
+  async joinChannel({ commit, dispatch }, channel: string) {
     try {
       commit('LOADING_START')
-      const users = await channelService.join(channel)
 
-      // ez amugy nem loadol messageket hanem usereket ad vissza
-      const messages = await channelService.join(channel).loadMessages()
-      console.log('nem jut ide ')
-      console.log(messages)
+      const c = channelService.join(channel)
+
       const joinedChannel = await channelService.in(channel)?.joinChannel(channel)
-      console.log('ide se')
+
       commit('NEW_CHANNEL', joinedChannel)
-      commit('LOADING_SUCCESS', { channel, messages })
-      commit('SET_ACTIVE', channel)
+
+      await dispatch('selectChannel', joinedChannel!.name)
     } catch (err) {
-      console.log('fasszomerror')
       commit('LOADING_ERROR', err)
       throw err
     }
@@ -114,12 +110,24 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
   async addMessage({ commit, dispatch }, { channel, message }: { channel: string; message: RawMessage }) {
+    const commandsTypes = ['join', 'invite', 'revoke', 'kick', 'cancel', 'quit', 'list']
+    let isCommand = false
 
-    const command = message.startsWith('/')
+    commandsTypes.forEach(element => {
+      if (message.trim().startsWith('/' + element)){
+        isCommand = true
+      }
+      
+    })
 
-    if (command){
-      return dispatch('handleCommand', message)
+    if (isCommand){
+      return await dispatch('handleCommand', message)
     }
+
+    if (this.state.channels.active == null){
+      return
+    }
+ 
 
     const newMessage = await channelService.in(channel)?.addMessage(message)
     commit('NEW_MESSAGE', { channel, message: newMessage })
@@ -133,27 +141,26 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     const channelOrUserName = parts[1]
     const publicityOfChannel = parts[2]
   
-    console.log('command type: ' + commandType)
-    console.log('command variable: ' + channelOrUserName)
-    console.log('publicity: ' + publicityOfChannel)
-
     // /join channelName private
     if (commandType === 'join'){  
-      console.log(this.state.channels.users)
-      console.log('join channel')
+
       const response = (await api.get(`/channels/${channelOrUserName}/check`)).data
-      console.log(response)
-      console.log('sent api')
+
       // create new channel
       if (response){
-        console.log('got response')
+
         if ('success' in response){
-          console.log('success received')
+
           const createNew = !response.channel
 
-          const channel = createNew ? { name: channelOrUserName, public: publicityOfChannel === 'public' } : response.channel
-          const action = createNew ? 'createChannel' : 'joinChannel'
-          await dispatch(action, channel.name)
+          const channel = createNew ? { name: channelOrUserName, is_private: publicityOfChannel === 'private' } : response.channel
+          
+          if (createNew){
+            await dispatch('createChannel', channel)
+          }
+          else {
+            await dispatch('joinChannel', channel.name)
+          }
 
         }
 
@@ -200,7 +207,6 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       console.log('kick member')
     }
     if (commandType === 'list'){
-      console.log('list members')
       commit('ui/toggleMembersDrawer', true, { root: true })
     }
     if (commandType === 'cancel'){
