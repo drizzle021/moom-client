@@ -19,9 +19,9 @@
 <script lang='ts'>
 
 import MessageComponent from 'src/components/MessageComponent.vue'
-import { SerializedMessage } from 'src/contracts'
+// import { SerializedMessage } from 'src/contracts'
 import { defineComponent, nextTick, ref } from 'vue'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default defineComponent({
   components: { MessageComponent },

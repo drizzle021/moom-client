@@ -4,11 +4,11 @@ import { ChannelsStateInterface } from './state'
 import { activityService, channelService } from 'src/services'
 import { RawMessage, ChannelResponse } from 'src/contracts'
 import { api } from 'boot/axios'
-import { AxiosResponse } from 'axios'
+// import { AxiosResponse } from 'axios'
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   
-  async selectChannel ({ state, commit, getters, dispatch }, channel: string) {
+  async selectChannel ({ commit }, channel: string) {
     // if (state.channels.length === 0) {
     //   commit('SET_SELECTED_CHANNEL', '')
     //   return
@@ -28,9 +28,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
 
       // After getting the messages they come reversed order, so reverse them
-      const m = messages.reverse()
+      messages.reverse()
 
-      commit('SET_CHANNEL_DATA', { channel: channel, messages, users })
+      commit('SET_CHANNEL_DATA', { channel, messages, users })
 
       commit('SET_ACTIVE', channel)
       // console.log('active channel: ' + state.active)
@@ -41,7 +41,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     }
   },
   
-  async getUserChannels ({ commit, dispatch }, channelFromRoute: string): Promise<boolean> {
+  async getUserChannels ({ commit }): Promise<boolean> {
     try {
       const channels = await channelService.getChannel()
       
@@ -85,7 +85,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     try {
       commit('LOADING_START')
 
-      const c = channelService.join(channel)
+      // const c = channelService.join(channel)
 
       const joinedChannel = await channelService.in(channel)?.joinChannel(channel)
 
@@ -194,7 +194,15 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     // /invite nickName
     if (commandType === 'invite'){  
-      console.log('invite member')
+      
+      const response = await activityService.inviteUser(this.state.channels!.active!, channelOrUserName)
+
+      // if (response) {
+      //   if ('success' in response) {
+      //     return { message: 'Successfully invited user ' + channelOrUserName }
+      //   }
+      // }
+
     }
 
     // /revoke nickName
@@ -206,37 +214,70 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     if (commandType === 'kick'){  
       console.log('kick member')
     }
+
+
     if (commandType === 'list'){
       commit('ui/toggleMembersDrawer', true, { root: true })
     }
+
+
     if (commandType === 'cancel'){
-      console.log('cancel channel')
+      const isAdmin = (await api.get(`channels/${channelOrUserName}/admin`)).data
+
+      // ADMIN DELETES THE CHANNEL WITH CANCEL
+      if (isAdmin){
+        await channelService.in(channelOrUserName)?.deleteChannel(channelOrUserName)
+      }
+      // MEMBER JUST LEAVES CHANNEL WITH CANCEL
+      if (!isAdmin){
+        await channelService.in(channelOrUserName)?.leaveChannel(channelOrUserName)
+      }
+
     }
+
+
+
+    
     if (commandType === 'quit'){
-      console.log('quit channel')
+      // const activeChannel = this.state.channels.active
+      const isAdmin = (await api.get(`channels/${channelOrUserName}/admin`)).data
+    
+      console.log('admin: ' + isAdmin)
+    
+      await channelService.in(channelOrUserName)?.deleteChannel(channelOrUserName)
+
     }
-  },
-
-
-
-
-
-  async addMember ({ commit }, user: string) {
-    const newMember = await activityService.inviteUser(user)
-    commit('NEW_MEMBER', { user: newMember })
-    // channel: { name: string, is_private: boolean }, 
-    try {
-      // commit('LOADING_START')
-      // const messages = await channelService.join(channel.name).loadMessages()
-      // commit('LOADING_SUCCESS', { channel, messages })
-      // commit('SET_ACTIVE', channel)
-    } catch (err) {
-      console.log('aaaaaaaaaaaaaa')
-      commit('LOADING_ERROR', err)
-      throw err
-    }
-
   }
+
+  // case 'quit': {
+  //   const channelToDelete = await handleQuit(state, commandArguments)
+  //   openConfirmDialog(
+  //     `Are you sure you want to delete ${channelToDelete}?`,
+  //     async () => {
+  //       await channelService.in(channelToDelete)?.deleteChannel(channelToDelete)
+  //     })
+  //   break
+  // }
+
+
+
+  // NEVER USED
+  // async addMember ({ commit }, {channel: string, user: string}) {
+  //   const newMember = await activityService.inviteUser(channel, user)
+  //   commit('NEW_MEMBER', { user: newMember })
+  //   // channel: { name: string, is_private: boolean }, 
+  //   try {
+  //     // commit('LOADING_START')
+  //     // const messages = await channelService.join(channel.name).loadMessages()
+  //     // commit('LOADING_SUCCESS', { channel, messages })
+  //     // commit('SET_ACTIVE', channel)
+  //   } catch (err) {
+  //     console.log('aaaaaaaaaaaaaa')
+  //     commit('LOADING_ERROR', err)
+  //     throw err
+  //   }
+
+  // }
 
 
 }

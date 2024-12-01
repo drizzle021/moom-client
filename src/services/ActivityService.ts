@@ -32,9 +32,15 @@ class ActivitySocketManager extends SocketManager {
   }
 
   // VALOSZINULEG KELL IDE CHANNEL IS NEM CSAK USER STRING
-  public inviteUser (user: string): Promise<void> {
+  public async inviteUser (channel: string, user: string): Promise<any> {
     // channel: { name: string, is_private: boolean }, 
-    return this.emitAsync('inviteUser', user)
+    try {
+      return await this.emitAsync('inviteUser', channel, user)
+    } catch (error) {
+      console.error('Error in inviteUser:', error)
+      throw error // Re-throw if you want the caller to handle it
+    }
+    // return this.emitAsync('inviteUser', channel, user)
   }
 
 

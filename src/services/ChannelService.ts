@@ -39,6 +39,13 @@ class ChannelSocketManager extends SocketManager {
     return this.emitAsync('addUser', channel)
   }
 
+  public deleteChannel (channel: string): Promise<void> {
+    return this.emitAsync('deleteChannel', channel)
+  }
+
+  public leaveChannel (channel: string): Promise<void> {
+    return this.emitAsync('leaveChannel', channel)
+  }
 }
 
 class ChannelService {

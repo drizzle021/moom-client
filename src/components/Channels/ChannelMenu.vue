@@ -23,7 +23,8 @@ export default defineComponent({
 
   methods: {
     deleteChannel() {
-      this.$store.commit('ui/deleteChannel', this.channel)
+      // this.$store.commit('ui/deleteChannel', this.channel)
+      console.log('delete')
     },
     openSettings() {
       console.log('settings')
