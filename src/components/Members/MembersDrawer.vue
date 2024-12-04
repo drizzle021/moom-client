@@ -1,8 +1,8 @@
 <template>
-  <q-drawer v-model="membersDrawerState" side="right" :width="400" show-if-above>
+  <q-drawer v-model="membersDrawerState" side="right" :width="400" show-if-above elevated>
 
     <q-list>
-      <q-item-label header>
+      <q-item-label v-show="activeChannel !== ''" header>
         <q-btn dense flat icon="add" @click="addMemberDialog = true" label="add member" class="q-mt-md-sm q-mt-xs-xl" />
 
       </q-item-label>
@@ -20,13 +20,18 @@
           <q-item-label lines="1">{{ member.status }}</q-item-label>
         </q-item-section>
 
-
         <q-item-section side>
-          <q-badge :color="member.state == 'online' ? 'green-7' : member.state == 'offline' ? 'grey-7' : 'red-7'">
-            {{ member.state == 'online' ? 'Online' : member.state == 'offline' ? 'Offline' : 'DnD' }}
+            <q-avatar v-if="activeAdmin === member.id" rounded icon="star" text-color="yellow-7"></q-avatar>
+        </q-item-section> 
+        <q-item-section side>
+          <q-badge v-if="member.name!=currentUser.name" :color="userStates[member.nickname] == 'ONLINE' ? 'green-7' : userStates[member.nickname] == 'DND' ? 'red-7' : 'grey-7'">
+            {{ userStates[member.nickname] == 'ONLINE' ? 'Online' : userStates[member.nickname] == 'DND' ? 'DnD' : 'Offline' }}
           </q-badge>
-        </q-item-section>
-
+          <q-badge v-else :color="userState == 'ONLINE' ? 'green-7' : userState == 'DND' ? 'red-7' : 'grey-7'">
+            {{ userState == 'ONLINE' ? 'Online' : userState == 'DND' ? 'DnD' : 'Offline' }}
+          </q-badge>
+        </q-item-section> 
+        
 
 
         <MemberMenu :user="member" />
@@ -123,30 +128,44 @@ export default defineComponent({
       get() {
         return this.$store.state.ui.loggedInProfile
       }
+    },
+    userStates: {
+      get() {
+        return this.$store.state.channels.userStates
+      }
+    },
+    userState() {
+      return this.$store.state.auth.userState
+    },
+    currentUser() {
+      return this.$store.state.auth.user
+    }, 
+    activeChannel(){
+      return this.$store.state.channels.active
+    },
+    activeAdmin(){
+      const channels = this.$store.state.channels.channels
+      for (const c of channels){
+        console.log(c)
+        if (c.name === this.activeChannel){
+          console.log(c.name)
+          console.log(c.adminId)
+          return c.adminId
+        }
+      } 
+
+      return ''
+
     }
   },
 
   methods: {
 
     async addMember() {
-      // ADD PROPER VERIFICATION OF NAMES AND INFORM THE USER
       if (this.nickname.trim() !== '') {
 
-        await this.addMemberAction({ name: this.nickname })
-
-
-        const user = {
-          name: this.nickname.trim(),
-          status: 'added user',
-          icon: '',
-          state: 'online'
-        }
-        if (user.name !== '') {
-          this.$store.commit('ui/addMember', user)
-
-        }
+        await this.inviteMember(this.nickname)
       }
-
       this.nickname = ''
 
     },
@@ -156,7 +175,7 @@ export default defineComponent({
     }),
 
 
-    ...mapActions('channels', ['addMemberAction'])
+    ...mapActions('channels', ['inviteMember'])
 
 
   },

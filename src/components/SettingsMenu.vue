@@ -5,7 +5,7 @@
         <div class="column">
           <div class="text-h6 q-mb-md">Settings</div>
           <q-toggle v-model="notification" label="Notifications only addressed to me" />
-          <q-option-group :options="options" type="radio" v-model="state" />
+          <q-option-group :options="options" type="radio" @click="setUserState" v-model="state" />
           <q-btn color="primary" label="Logout" size="md" v-close-popup @click="logout" />
         </div>
       </div>
@@ -20,42 +20,42 @@
 
 <script>
 import { defineComponent, ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'src/store'
 import { mapActions } from 'vuex'
 
 export default defineComponent({
     name: 'SettingsMenu',
     components:{},
 
-    setup(){
-      const router = useRouter();
-
-      // logout abd redirect user to login page
-      const store = useStore()
-      const currentUserState = store.state.ui.loggedInProfile.state
+    data(){
+      const currentUserState = this.$store.state.auth.userStatus || 'ONLINE'
       
-
       return{
         notification: ref(false),
         state: ref(currentUserState),
         options: [
-        { label: 'Online', value: 'online', color: 'green' },
-        { label: 'Do not Disturb', value: 'dnd', color: 'red' },
-        { label: 'Offline', value: 'offline', color: 'grey' }
+        { label: 'Online', value: 'ONLINE', color: 'green' },
+        { label: 'Do not Disturb', value: 'DND', color: 'red' },
+        { label: 'Offline', value: 'OFFLINE', color: 'grey' }
         ],
         currentUserState
       }
     },
 
     methods:{
-      ...mapActions('auth', ['logout']),
+      ...mapActions('auth', ['logout', 'setStatus']),
+
+
+      async setUserState() {
+        console.log(this.$store.state.auth.userStatus)
+        await this.setStatus(this.state)
+        
+      }
     },
 
     watch:{
         state(newState){
-          this.$store.commit('ui/switchUserState', newState)
-        }
+          this.setStatus(newState)
+       }
     }
 
 })

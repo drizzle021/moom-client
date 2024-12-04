@@ -1,14 +1,15 @@
 import { ActionTree } from 'vuex'
 import { StateInterface } from '../index'
 import { ChannelsStateInterface } from './state'
-import { activityService, channelService } from 'src/services'
-import { RawMessage, ChannelResponse } from 'src/contracts'
+import { activityService, channelService, authService } from 'src/services'
+import { RawMessage, ChannelResponse, Channel } from 'src/contracts'
 import { api } from 'boot/axios'
+import auth from 'src/boot/auth'
 // import { AxiosResponse } from 'axios'
 
 const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   
-  async selectChannel ({ commit }, channel: string) {
+  async selectChannel ({ commit, rootState, state }, channel: string) {
     // if (state.channels.length === 0) {
     //   commit('SET_SELECTED_CHANNEL', '')
     //   return
@@ -18,19 +19,22 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     }
 
     try {
+      if (rootState.auth.userState !== 'OFFLINE'){
+        const channelResponse: ChannelResponse = (await api.get(`/channels/${channel}`)).data
+        const users = channelResponse.users
 
-      const channelResponse: ChannelResponse = (await api.get(`/channels/${channel}`)).data
-      const users = channelResponse.users
+        // console.log(users[7].icon)
 
-      // console.log(users[7].icon)
-
-      const messages = (await api.get(`/channels/${channel}/messages`)).data.data
+        const messages = (await api.get(`/channels/${channel}/messages`)).data.data
 
 
-      // After getting the messages they come reversed order, so reverse them
-      messages.reverse()
+        // After getting the messages they come reversed order, so reverse them
+        messages.reverse()
+        commit('SET_CHANNEL_DATA', { channel, messages, users })
 
-      commit('SET_CHANNEL_DATA', { channel, messages, users })
+      }
+
+      console.log(state.messages)
 
       commit('SET_ACTIVE', channel)
       // console.log('active channel: ' + state.active)
@@ -49,7 +53,18 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       commit('SET_CHANNELS', channels)
 
       for (const channel of channels) {
-        commit('SET_CHANNEL_DATA', { channel: channel.name, messages: [], users: [] })
+        const channelResponse: ChannelResponse = (await api.get(`/channels/${channel.name}`)).data
+        const users = channelResponse.users
+
+        // console.log(users[7].icon)
+
+        const messages = (await api.get(`/channels/${channel.name}/messages`)).data.data
+
+
+        // After getting the messages they come reversed order, so reverse them
+        messages.reverse()
+        commit('SET_CHANNEL_DATA', { channel: channel.name, messages, users })
+
         await channelService.join(channel.name)
       }
 
@@ -67,8 +82,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       commit('LOADING_START')
       const newChannel = await channelService.addChannel(channel)
       commit('NEW_CHANNEL', newChannel)
-
+      console.log('csinalt ujat')
       const messages = await channelService.join(channel.name).loadMessages()
+      console.log('beloadolta messageket')
       const name = channel.name
       commit('LOADING_SUCCESS', { name, messages })
       // commit('SET_ACTIVE', channel.name)
@@ -80,6 +96,44 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     
   },
+
+
+  async deleteChannel({ commit, dispatch }, channel: string) {
+    try {
+      commit('LOADING_START')
+      const isAdmin = (await api.get(`channels/${channel}/admin`)).data
+
+      // const c = channelService.join(channel)
+
+      if (isAdmin){
+        await channelService.in(channel)?.deleteChannel(channel)
+        const channels = await channelService.getChannel()
+        commit('SET_CHANNELS', channels)
+        if (this.state.channels.active === channel) {
+          commit('SET_ACTIVE', '')
+          // await dispatch('selectChannel', '')
+        }
+
+      }
+      if (!isAdmin){
+        await channelService.in(channel)?.leaveChannel(channel)
+        const channels = await channelService.getChannel()
+        commit('SET_CHANNELS', channels)
+        if (this.state.channels.active === channel) {
+          commit('SET_ACTIVE', '')
+        }
+
+      }
+
+      // commit('', )
+
+     
+    } catch (err) {
+      commit('LOADING_ERROR', err)
+      throw err
+    }
+  },
+
 
   async joinChannel({ commit, dispatch }, channel: string) {
     try {
@@ -194,25 +248,35 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     // /invite nickName
     if (commandType === 'invite'){  
-      
-      const response = await activityService.inviteUser(this.state.channels!.active!, channelOrUserName)
-
-      // if (response) {
-      //   if ('success' in response) {
-      //     return { message: 'Successfully invited user ' + channelOrUserName }
-      //   }
-      // }
+      await dispatch('inviteMember', channelOrUserName)
 
     }
 
     // /revoke nickName
     if (commandType === 'revoke'){  
-      console.log('revoke member')
+      const response = await channelService.in(this.state.channels!.active!)?.revokeUser(this.state.channels!.active!, channelOrUserName)
+      if (response) {
+        // if ('error' in response) {
+        //   throw new ValidationException(response.error)
+        // }
+        if ('success' in response) {
+          return { message: 'Successfully revoked user ' + channelOrUserName }
+        }
+      }
+      await dispatch('selectChannel', this.state.channels!.active)
     }
 
     // /kick nickName
     if (commandType === 'kick'){  
-      console.log('kick member')
+      const response = await channelService.in(this.state.channels!.active!)?.kickUser(this.state.channels!.active!, channelOrUserName, false)
+      if (response) {
+        // if ('error' in response) {
+        //   throw new ValidationException(response.error)
+        // }
+        if ('success' in response) {
+          return { message: 'Successfully kicked user ' + channelOrUserName }
+        }
+      }
     }
 
 
@@ -233,6 +297,10 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
         await channelService.in(channelOrUserName)?.leaveChannel(channelOrUserName)
       }
 
+      const channels = await channelService.getChannel()
+      commit('SET_CHANNELS', channels)
+      commit('SET_ACTIVE', '')
+
     }
 
 
@@ -246,8 +314,12 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     
       await channelService.in(channelOrUserName)?.deleteChannel(channelOrUserName)
 
+      const channels = await channelService.getChannel()
+      commit('SET_CHANNELS', channels)
+      commit('SET_ACTIVE', '')
+
     }
-  }
+  },
 
   // case 'quit': {
   //   const channelToDelete = await handleQuit(state, commandArguments)
@@ -261,23 +333,21 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
 
 
-  // NEVER USED
-  // async addMember ({ commit }, {channel: string, user: string}) {
-  //   const newMember = await activityService.inviteUser(channel, user)
-  //   commit('NEW_MEMBER', { user: newMember })
-  //   // channel: { name: string, is_private: boolean }, 
-  //   try {
-  //     // commit('LOADING_START')
-  //     // const messages = await channelService.join(channel.name).loadMessages()
-  //     // commit('LOADING_SUCCESS', { channel, messages })
-  //     // commit('SET_ACTIVE', channel)
-  //   } catch (err) {
-  //     console.log('aaaaaaaaaaaaaa')
-  //     commit('LOADING_ERROR', err)
-  //     throw err
-  //   }
+  async inviteMember ({ dispatch }, user) {
+    const response = await channelService.in(this.state.channels!.active!)?.inviteUser(this.state.channels!.active!, user)
+    await dispatch('selectChannel', this.state.channels!.active)
+  },
 
-  // }
+  async removeSocket ({ getters, commit }, { channel, clearChannelData = true }: {channel: string, clearChannelData?: boolean}) {
+    const leaving: Channel[] = channel !== '' ? [channel] : getters.joinedChannels
+    console.log(leaving)
+    for (const c of leaving) {
+      console.log(channelService.leave(c.name))
+      if (clearChannelData) {
+        commit('CLEAR_CHANNEL', c.name)
+      }
+    }
+  }
 
 
 }

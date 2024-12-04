@@ -16,11 +16,10 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     state.error = error
   },
   CLEAR_CHANNEL(state, channel) {
-    state.active = null
+    state.active = ''
     delete state.messages[channel]
   },
   SET_ACTIVE(state, channel: string) {
-    console.log(channel)
     state.active = channel
   },
   NEW_MESSAGE(state, { channel, message }: { channel: string; message: SerializedMessage }) {
@@ -31,6 +30,9 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     state.channels = channels
   },  
   SET_CHANNEL_DATA (state, { channel, messages, users }: { channel: string, messages: SerializedMessage[], users: User[] }) {
+    console.log(channel)
+    console.log(messages)
+    console.log(users)
     state.loading = false
     state.messages[channel] = messages
     state.users[channel] = users
@@ -42,6 +44,10 @@ const mutation: MutationTree<ChannelsStateInterface> = {
 
   USER_JOINED (state, { channel, user }: { channel: string, user: User }) {
     state.users[channel].push(user)
+  },
+
+  SET_STATES(state, { user, userState }: { user: string, userState: string }) {
+    state.userStates[user] = userState
   }
 
 }

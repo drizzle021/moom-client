@@ -10,7 +10,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item v-for="(channel, index) in channels" :key="index" clickable @click="valamimas(channel)">
+        <q-item v-for="(channel, index) in channels" :key="index" clickable @click="select(channel)" :active="selectedChannel == channel.name" active-class="bg-accent">
           <q-item-section>
             <q-avatar size="60px" color="secondary" text-color="white">
               {{ channel ? (channel.name ? channel.name[0]: '') : '' }}
@@ -132,7 +132,7 @@ export default defineComponent({
     },
     selectedChannel: {
       get() {
-        return this.$store.state.ui.selectedChannel
+        return this.$store.state.channels.active
       }
     },
     currentUser() {
@@ -144,7 +144,7 @@ export default defineComponent({
 
 
   methods: {
-    async valamimas(channel){
+    async select(channel){
       await this.selectChannel(channel.name)
       // this.setActiveChannel(channel.name)
     },

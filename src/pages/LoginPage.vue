@@ -13,7 +13,7 @@
               <q-separator />
               <q-tab-panels v-model="tab" class="background-light">
                 <q-tab-panel name="login" style="min-width: 400px;max-width:400px">
-                  <q-form ref="form">
+                  <q-form ref="form" @keydown.enter.prevent="onSubmit">
                     <div class="q-gutter-y-sm q-mt-lg">
                       <label class="q-mb-xs "> EMAIL <span class="required-asterisk">*</span> </label>
                       <q-input v-model="credentials.email" type="email" bg-color="white" borderless />

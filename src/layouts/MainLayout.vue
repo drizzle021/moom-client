@@ -17,7 +17,7 @@
 
     <q-footer class="bg-white text-white fixed-footer">
       <q-toolbar>
-        <q-input :disable="loading" @keydown.enter.prevent="send" outlined bottom-slots v-model="message"
+        <q-input :disable="loading || userState" @keydown.enter.prevent="send" outlined bottom-slots v-model="message"
           label="Type your message..." counter maxlength="2000" rounded autogrow class="full-width q-py-lg">
           <template v-slot:append>
             <q-btn icon="help" flat ripple>
@@ -93,6 +93,9 @@ export default defineComponent({
 
     activeChannel() {
       return this.$store.state.channels.active
+    },
+    userState() {
+      return this.$store.state.auth.userState === 'OFFLINE'
     }
   },
 

@@ -13,7 +13,7 @@
                             <q-separator />
                             <q-tab-panels v-model="tab" class="background-light">
                                 <q-tab-panel name="register" style="min-width: 400px;max-width:400px">
-                                    <q-form ref="form">
+                                    <q-form ref="form" @keydown.enter.prevent="onSubmit">
                                         <div class="q-gutter-y-sm q-mt-lg">
                                             <label class="q-mb-xs "> NAME <span class="required-asterisk">*</span>
                                             </label>
@@ -87,25 +87,25 @@ export default defineComponent({
     },
     methods: {
         async onSubmit() {
-  const formData = new FormData()
-  formData.append('name', this.form.name)
-  formData.append('surname', this.form.surname)
-  formData.append('nickname', this.form.nickname)
-  formData.append('email', this.form.email)
-  formData.append('password', this.form.password)
-  formData.append('passwordConfirmation', this.form.passwordConfirmation)
-  if (this.form.icon) {
-    formData.append('icon', this.form.icon)
-  }
+            const formData = new FormData()
+            formData.append('name', this.form.name)
+            formData.append('surname', this.form.surname)
+            formData.append('nickname', this.form.nickname)
+            formData.append('email', this.form.email)
+            formData.append('password', this.form.password)
+            formData.append('passwordConfirmation', this.form.passwordConfirmation)
+            if (this.form.icon) {
+                formData.append('icon', this.form.icon)
+            }
 
-  try {
-    await this.$store.dispatch('auth/register', formData)
-    this.$router.push(this.redirectTo)
-  } catch (error) {
-    console.error('Registration error:', error)
-  }
-}
-
+            try {
+                await this.$store.dispatch('auth/register', formData)
+                this.$router.push(this.redirectTo)
+            } 
+            catch (error) {
+                console.error('Registration error:', error)
+            }
+        }
     }
 })
 </script>

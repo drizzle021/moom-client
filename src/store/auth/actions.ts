@@ -1,8 +1,9 @@
 import { ActionTree } from 'vuex'
 import { StateInterface } from '../index'
 import { AuthStateInterface } from './state'
-import { authService, authManager } from 'src/services'
-import { LoginCredentials, RegisterData } from 'src/contracts'
+import { authService, authManager, activityService, channelService } from 'src/services'
+import { LoginCredentials, RegisterData, ChannelResponse } from 'src/contracts'
+import { api } from 'boot/axios'
 
 const actions: ActionTree<AuthStateInterface, StateInterface> = {
   async check ({ commit }) {
@@ -21,6 +22,38 @@ const actions: ActionTree<AuthStateInterface, StateInterface> = {
       throw err
     }
   },
+
+
+  async setStatus ({ commit, dispatch, state, rootState }, userState) {
+
+    if (state.userState === userState) {
+      return
+    }
+
+    await activityService.changeState(userState)
+    commit('SET_USER_STATE', userState)
+    
+    if (userState === 'OFFLINE') {
+      await dispatch('channels/removeSocket', { channel: '', clearChannelData: false }, { root: true })
+    } 
+    else if (userState === 'ONLINE' || userState === 'DND') {
+
+      const channels = await channelService.getChannel()
+      
+
+      commit('channels/SET_CHANNELS', channels, { root: true })
+
+      for (const channel of channels) {
+        await channelService.join(channel.name)
+      }
+
+/*       if (rootState.channels.active === ''){
+        return
+      } */
+    }
+  },  
+
+
   async register ({ commit }, form: RegisterData) {
     try {
       commit('AUTH_START')

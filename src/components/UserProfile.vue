@@ -13,8 +13,8 @@
 
 
             <q-badge class="profile-badge"
-              :color="selectedUser.state == 'online' ? 'green-7' : selectedUser.state == 'offline' ? 'grey-7' : 'red-7'">
-              {{ selectedUser.state == 'online' ? 'Online' : selectedUser.state == 'offline' ? 'Offline' : 'DnD' }}
+              :color="userState == 'ONLINE' ? 'green-7' : userState == 'OFFLINE' ? 'grey-7' : 'red-7'">
+              {{ userState == 'ONLINE' ? 'Online' : userState == 'OFFLINE' ? 'Offline' : 'DND' }}
             </q-badge>
           </div>
 
@@ -64,6 +64,9 @@ export default defineComponent({
     },
     currentUser() {
       return this.$store.state.auth.user
+    },
+    userState() {
+      return this.$store.state.auth.userState
     }
   },
   methods: {

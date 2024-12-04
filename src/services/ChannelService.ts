@@ -46,6 +46,26 @@ class ChannelSocketManager extends SocketManager {
   public leaveChannel (channel: string): Promise<void> {
     return this.emitAsync('leaveChannel', channel)
   }
+
+  public async inviteUser (channel: string, user: string): Promise<User> {
+    return await this.emitAsync('inviteUser', channel, user)
+  }
+
+  public revokeUser (channel: string, user: string): Promise<void> {
+    return this.emitAsync('revokeUser', channel, user)
+  }
+
+  public async kickUser (channel: string, user: string, isRevoke: boolean): Promise<any> {
+    
+    try {
+      console.log('trying to kick user: ' + user + ' from channel: ' + channel)
+      return await this.emitAsync('kickUser', channel, user)
+    } catch (error) {
+      console.error('Error in kickUser:', error)
+      throw error // Re-throw if you want the caller to handle it
+    }
+    // return this.emitAsync('kickUser', channel, user, isRevoke)
+  }
 }
 
 class ChannelService {
@@ -67,11 +87,11 @@ class ChannelService {
   public leave (name: string): boolean {
     const channel = this.channels.get(name)
 
+    console.log(channel)
     if (!channel) {
       return false
     }
 
-    // disconnect namespace and remove references to socket
     channel.destroy()
     return this.channels.delete(name)
   }

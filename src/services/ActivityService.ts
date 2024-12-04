@@ -1,21 +1,27 @@
 import { User } from 'src/contracts'
 import { authManager } from '.'
-import { SocketManager } from './SocketManager'
+import { BootParams, SocketManager } from './SocketManager'
 // import { api } from 'src/boot/axios'
 
 
 class ActivitySocketManager extends SocketManager {
-  public subscribe (): void {
+  public subscribe ({ store }: BootParams): void {
     this.socket.on('user:list', (onlineUsers: User[]) => {
-      console.log('Online users list', onlineUsers)
+      for (const user of onlineUsers) {
+        store.commit('channels/SET_STATES', { user: user.name, userState: 'ONLINE' })
+      }
     })
 
-    this.socket.on('user:online', (user: User) => {
-      console.log('User is online', user)
+    this.socket.on('user:ONLINE', (user: User) => {
+      store.commit('channels/SET_STATES', { user: user.name, userState: 'ONLINE' })
     })
 
-    this.socket.on('user:offline', (user: User) => {
-      console.log('User is offline', user)
+    this.socket.on('user:OFFLINE', (user: User) => {
+      store.commit('channels/SET_STATES', { user: user.name, userState: 'OFFLINE' })
+    })
+
+    this.socket.on('user:DND', (user: User) => {
+      store.commit('channels/SET_STATES', { user: user.name, userState: 'DND' })
     })
 
     authManager.onChange((token) => {
@@ -27,21 +33,11 @@ class ActivitySocketManager extends SocketManager {
     })
   }
   
-  public changeStatus (status: string): Promise<void> {
-    return this.emitAsync('changeStatus', status)
+  public changeState (userState: string): Promise<void> {
+    return this.emitAsync('changeState', userState)
   }
 
-  // VALOSZINULEG KELL IDE CHANNEL IS NEM CSAK USER STRING
-  public async inviteUser (channel: string, user: string): Promise<any> {
-    // channel: { name: string, is_private: boolean }, 
-    try {
-      return await this.emitAsync('inviteUser', channel, user)
-    } catch (error) {
-      console.error('Error in inviteUser:', error)
-      throw error // Re-throw if you want the caller to handle it
-    }
-    // return this.emitAsync('inviteUser', channel, user)
-  }
+
 
 
 
