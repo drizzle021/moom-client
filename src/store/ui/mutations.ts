@@ -12,6 +12,9 @@ const mutation: MutationTree<ExampleStateInterface> = {
   toggleUserProfile(state:ExampleStateInterface){
     state.userProfileState = !state.userProfileState
   },
+  toggleTypingDialog(state:ExampleStateInterface){
+    state.typingDialogState = !state.typingDialogState
+  },
 
   setMessage(state:ExampleStateInterface, message){
     state.message = message

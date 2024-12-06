@@ -21,6 +21,7 @@ class ChannelSocketManager extends SocketManager {
         store.commit('channels/USER_JOINED', { channel, user })
       }
     })
+
   }
 
   public addMessage (message: RawMessage): Promise<SerializedMessage> {
@@ -86,8 +87,7 @@ class ChannelService {
 
   public leave (name: string): boolean {
     const channel = this.channels.get(name)
-
-    console.log(channel)
+    
     if (!channel) {
       return false
     }

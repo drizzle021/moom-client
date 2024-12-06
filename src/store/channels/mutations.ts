@@ -30,9 +30,6 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     state.channels = channels
   },  
   SET_CHANNEL_DATA (state, { channel, messages, users }: { channel: string, messages: SerializedMessage[], users: User[] }) {
-    console.log(channel)
-    console.log(messages)
-    console.log(users)
     state.loading = false
     state.messages[channel] = messages
     state.users[channel] = users
@@ -48,7 +45,20 @@ const mutation: MutationTree<ChannelsStateInterface> = {
 
   SET_STATES(state, { user, userState }: { user: string, userState: string }) {
     state.userStates[user] = userState
+  },
+  NEXT_PAGE(state){
+    state.page += 1
+  },
+  RESET_PAGES(state){
+    state.page = 2
+  },
+  LOAD_PAGE_MESSAGE(state, { channel, message }: { channel: string; message: SerializedMessage }) {
+    state.messages[channel].unshift(message)
+  },
+  SET_HAS_MORE_PAGES(state, hasMorePages: boolean){
+    state.hasMorePages = hasMorePages  
   }
+
 
 }
 

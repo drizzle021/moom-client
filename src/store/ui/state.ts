@@ -7,8 +7,8 @@ export interface ExampleStateInterface {
   userProfileSelected: null| User;
   channelList: Channel[];
   memberList: User[];
-  loggedInProfile: User;
   message: string;
+  typingDialogState: boolean;
 }
 
 function state(): ExampleStateInterface {
@@ -20,16 +20,8 @@ function state(): ExampleStateInterface {
     userProfileSelected: null,
     channelList: [],
     memberList: [],
-    loggedInProfile: {  
-      id: 1,
-      name: 'firstname',
-      surname: 'lastname',
-      nickname: 'username',
-      email: 'email@abc.com',
-      status: 'hello!',
-      icon: 'src/assets/kotori.jpg'
-      // state: 'online'
-    }
+    typingDialogState: false
+
 }
 }
 

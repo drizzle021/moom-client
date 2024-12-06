@@ -13,7 +13,7 @@
     </q-page-container>
 
 
-
+    <TypingDialog/>
 
     <q-footer class="bg-white text-white fixed-footer">
       <q-toolbar>
@@ -34,8 +34,11 @@
           <template v-slot:after>
             <q-btn :disable="loading" @click="send" type="submit" round dense flat icon="send" />
           </template>
-          <template v-slot:hint v-if="isTyping">
-            {{ "user is typing..." }}
+          <template v-slot:hint v-if="isTyping" >
+            <div @click="openTyping">
+              {{ "user is typing..." }}
+            </div>
+            
           </template>
         </q-input>
       </q-toolbar>
@@ -54,6 +57,7 @@ import NavBar from 'src/components/NavBar.vue'
 import MembersDrawer from 'src/components/Members/MembersDrawer.vue'
 import ChannelsDrawer from 'src/components/Channels/ChannelsDrawer.vue'
 import UserProfile from 'src/components/UserProfile.vue'
+import TypingDialog from 'src/components/TypingDialog.vue'
 import { defineComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -66,6 +70,7 @@ export default defineComponent({
     NavBar,
     MembersDrawer,
     ChannelsDrawer,
+    TypingDialog,
     UserProfile
   },
 
@@ -80,7 +85,7 @@ export default defineComponent({
       loading: false as boolean,
 
 
-      isTyping: false as boolean,
+      isTyping: true as boolean,
       typingTimeout: null as number | null
     }
   },
@@ -96,12 +101,15 @@ export default defineComponent({
     },
     userState() {
       return this.$store.state.auth.userState === 'OFFLINE'
+    },
+    typingDialog() {
+      return this.$store.state.ui.typingDialogState
     }
+
   },
 
   mounted() {
     this.getChannels()
-
   },
 
   methods: {
@@ -114,10 +122,15 @@ export default defineComponent({
     },
 
     async send() {
-      this.loading = true
-      await this.addMessage({ channel: this.activeChannel, message: this.message })
-      this.message = ''
-      this.loading = false
+      if (this.message.trim() !== ''){
+        this.loading = true
+        await this.addMessage({ channel: this.activeChannel, message: this.message })
+        this.message = ''
+        this.loading = false
+      }
+    },
+    openTyping(){
+      this.$store.commit('ui/toggleTypingDialog')
     },
 
 
@@ -140,21 +153,21 @@ export default defineComponent({
 
     }
 
-  },
-
-
-  handleTyping() {
-    if (this.typingTimeout !== null) {
-      clearTimeout(this.typingTimeout)
-    }
-
-    this.isTyping = true
-
-    // Set a delay to hide "is typing" message after user stops typing
-    this.typingTimeout = window.setTimeout(() => {
-      this.isTyping = false
-    }, 1000) // 1 second delay after user stops typing
   }
+
+
+  // handleTyping() {
+  //   if (this.typingTimeout !== null) {
+  //     clearTimeout(this.typingTimeout)
+  //   }
+
+  //   this.isTyping = true
+
+  //   // Set a delay to hide "is typing" message after user stops typing
+  //   this.typingTimeout = window.setTimeout(() => {
+  //     this.isTyping = false
+  //   }, 1000) // 1 second delay after user stops typing
+  // }
 
 
 

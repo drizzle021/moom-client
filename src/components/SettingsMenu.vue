@@ -43,13 +43,6 @@ export default defineComponent({
 
     methods:{
       ...mapActions('auth', ['logout', 'setStatus']),
-
-
-      async setUserState() {
-        console.log(this.$store.state.auth.userStatus)
-        await this.setStatus(this.state)
-        
-      }
     },
 
     watch:{

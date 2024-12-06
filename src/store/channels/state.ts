@@ -9,7 +9,8 @@ export interface ChannelsStateInterface {
   channels: Channel[]
   users: { [channel: string]: User[] }
   userStates:{[nickname: string]: string}
-  // users: User[]
+  page: number
+  hasMorePages: boolean
 }
 
 function state(): ChannelsStateInterface {
@@ -20,7 +21,9 @@ function state(): ChannelsStateInterface {
     active: '',
     channels: [],
     users: {},
-    userStates: {}
+    userStates: {},
+    page: 1,
+    hasMorePages: false
   }
 }
 

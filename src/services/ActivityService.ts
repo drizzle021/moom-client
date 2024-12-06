@@ -1,5 +1,5 @@
-import { User } from 'src/contracts'
-import { authManager } from '.'
+import { User, Channel } from 'src/contracts'
+import { authManager, channelService } from '.'
 import { BootParams, SocketManager } from './SocketManager'
 // import { api } from 'src/boot/axios'
 
@@ -24,6 +24,36 @@ class ActivitySocketManager extends SocketManager {
       store.commit('channels/SET_STATES', { user: user.name, userState: 'DND' })
     })
 
+    this.socket.on('userInvited', (user: User, channel: Channel) => {
+      console.log('invited Joined')
+
+      let check = false
+
+      for (const u of store.state.channels.users[channel.name]){
+        if (u.nickname === user.nickname){
+          check = true
+        }
+      }
+
+      if (user.id === store.state.auth.user!.id &&
+          !(channel.name in store.state.channels.users)
+      )
+      {
+        store.commit('channels/NEW_CHANNEL', channel)
+        channelService.join(channel.name)
+      }
+
+      if (
+        user.id !== store.state.auth.user!.id &&
+        channel.name in store.state.channels.users &&
+        !check
+      ) {
+        store.commit('channels/USER_JOINED', { channel: channel.name, user })
+      }
+    })
+
+
+
     authManager.onChange((token) => {
       if (token) {
         this.socket.connect()
@@ -37,9 +67,9 @@ class ActivitySocketManager extends SocketManager {
     return this.emitAsync('changeState', userState)
   }
 
-
-
-
+  public inviteUser (channel: string, user: string): Promise<User> {
+    return this.emitAsync('inviteUser', channel, user)
+  }
 
 }
 

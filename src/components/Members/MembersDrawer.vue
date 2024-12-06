@@ -146,10 +146,7 @@ export default defineComponent({
     activeAdmin(){
       const channels = this.$store.state.channels.channels
       for (const c of channels){
-        console.log(c)
         if (c.name === this.activeChannel){
-          console.log(c.name)
-          console.log(c.adminId)
           return c.adminId
         }
       } 

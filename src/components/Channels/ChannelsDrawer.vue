@@ -114,19 +114,12 @@ export default defineComponent({
 
   computed: {
     ...mapGetters('channels', {
-      channels: ['joinedChannels'],
-      lastMessageOf: 'lastMessageOf'
+      channels: ['joinedChannels']
     }),
 
     channelsDrawerState: {
       get() {
         return this.$store.state.ui.channelsDrawerState
-      }
-
-    },
-    channelList: {
-      get() {
-        return this.$store.state.ui.channelList
       }
 
     },
@@ -146,17 +139,15 @@ export default defineComponent({
   methods: {
     async select(channel){
       await this.selectChannel(channel.name)
-      // this.setActiveChannel(channel.name)
     },
 
     async joinChannel() {
       this.loading = true
 
-      await this.createChannel({ name: this.channelName, admin_id: this.currentUser.id, is_private: this.publicity })
+      await this.createOrJoinChannel({ name: this.channelName, admin_id: this.currentUser.id, is_private: this.publicity })
 
       this.channelName = ''
       this.loading = false
-      console.log(this.channels)
     },
 
     ...mapMutations('channels', {
@@ -164,32 +155,9 @@ export default defineComponent({
     }),
 
 
-    ...mapActions('channels', ['createChannel', 'selectChannel']),
+    ...mapActions('channels', ['createOrJoinChannel', 'selectChannel'])
 
-
-
-    deleteChannel(channel) {
-      this.$store.commit('ui/deleteChannel', channel)
-      // Notify the user
-      this.deleteChannelNotif(channel.name)
-
-
-    },
-    channelClick(element) {
-      console.log(element.name)
-      this.$store.commit('ui/switchChannel', element)
-
-    }
   }
-
-  // pull saved channel from store add it to channels and switch to it
-  // mounted() {
-  //   if (this.channelList.length === 0) {
-  //     this.$store.commit('ui/addChannel', this.selectedChannel)
-  //     this.$store.commit('ui/switchChannel', this.selectedChannel)
-
-  //   }
-  // }
 })
 
 

@@ -31,14 +31,18 @@ const actions: ActionTree<AuthStateInterface, StateInterface> = {
     }
 
     await activityService.changeState(userState)
-    commit('SET_USER_STATE', userState)
+    
     
     if (userState === 'OFFLINE') {
+      commit('SET_USER_STATE', userState)
       await dispatch('channels/removeSocket', { channel: '', clearChannelData: false }, { root: true })
     } 
     else if (userState === 'ONLINE' || userState === 'DND') {
-
+      commit('SET_USER_STATE', userState)
+     
       const channels = await channelService.getChannel()
+
+      console.log(channels)
       
 
       commit('channels/SET_CHANNELS', channels, { root: true })
@@ -46,6 +50,8 @@ const actions: ActionTree<AuthStateInterface, StateInterface> = {
       for (const channel of channels) {
         await channelService.join(channel.name)
       }
+
+      await dispatch('channels/selectChannel', rootState.channels.active, { root: true })
 
 /*       if (rootState.channels.active === ''){
         return
