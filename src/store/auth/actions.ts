@@ -3,17 +3,12 @@ import { StateInterface } from '../index'
 import { AuthStateInterface } from './state'
 import { authService, authManager, activityService, channelService } from 'src/services'
 import { LoginCredentials, RegisterData, ChannelResponse } from 'src/contracts'
-import { api } from 'boot/axios'
 
 const actions: ActionTree<AuthStateInterface, StateInterface> = {
   async check ({ commit }) {
     try {
       commit('AUTH_START')
       const user = await authService.me()
-      // join user to general channel - hardcoded for now
-      // if (user?.id !== state.user?.id) {
-      //   await dispatch('channels/join', 'general', { root: true })
-      // }
 
       commit('AUTH_SUCCESS', user)
       return user !== null
@@ -76,6 +71,18 @@ const actions: ActionTree<AuthStateInterface, StateInterface> = {
       commit('AUTH_START')
       const apiToken = await authService.login(credentials)
       commit('AUTH_SUCCESS', null)
+
+      
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            console.log('granted permission')
+          } else {
+            console.log('denied permission')
+          }
+        })
+      }
+
       // save api token to local storage and notify listeners
       authManager.setToken(apiToken.token)
       return apiToken

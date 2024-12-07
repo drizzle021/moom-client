@@ -24,21 +24,22 @@ class ActivitySocketManager extends SocketManager {
       store.commit('channels/SET_STATES', { user: user.name, userState: 'DND' })
     })
 
-    this.socket.on('userInvited', (user: User, channel: Channel, isrevoke: boolean) => {
-
+    this.socket.on('userInvited', (user: User, channel: Channel) => {
       let check = false
-      if (user.id === store.state.auth.user!.id &&
-        !(channel.name in store.state.channels.users)
+      if (user.id === store.state.auth.user!.id 
+   
       ){
         store.commit('channels/NEW_CHANNEL', channel)
         channelService.join(channel.name)
         return
       }
-      for (const u of store.state.channels.users[channel.name]){
-        if (u.nickname === user.nickname){
-          check = true
-        }
-      }   
+      if (store.state.channels.active !== ''){
+        for (const u of store.state.channels!.users[channel.name]){
+          if (u.nickname === user.nickname){
+            check = true
+          }
+        }   
+      }
 
       if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users){
         store.commit('channels/USER_JOINED', { channel: channel.name, user })
@@ -46,6 +47,20 @@ class ActivitySocketManager extends SocketManager {
 
 
     })
+
+    this.socket.on('userLeft', (user: User, channel: Channel) => {
+
+      if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users) {
+        store.commit('channels/USER_LEFT', { channel: channel.name, user })
+      }
+
+      if (user.id === store.state.auth.user!.id) {
+        channelService.leave(channel.name)
+        store.commit('channels/CLEAR_CHANNEL', channel.name)
+      }
+    })
+    
+    
 
     authManager.onChange((token) => {
       if (token) {
@@ -62,6 +77,20 @@ class ActivitySocketManager extends SocketManager {
 
   public inviteUser (channel: string, user: string): Promise<User> {
     return this.emitAsync('inviteUser', channel, user)
+  }
+
+   // VALAHOGY MASHOGY VAN ELKULDVE MINT AZ INVITE ES LEHET UGY KELLENE ENNEK IS MUKODNIE HOGY INSTANT KAPJON RESPONSEOT ES REFRESHELJEN
+  public revokeUser (channel: string, user: string): Promise<void> {
+    return this.emitAsync('revokeUser', channel, user)
+  }
+
+  public async kickUser (channel: string, user: string): Promise<void> {
+    try {
+      return this.emitAsync('kickUser', channel, user)
+    } catch (error) {
+      console.error('Error in kickUser:', error)
+      throw error
+    }
   }
 
 }

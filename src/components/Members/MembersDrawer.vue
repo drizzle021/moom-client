@@ -175,15 +175,7 @@ export default defineComponent({
     ...mapActions('channels', ['inviteMember'])
 
 
-  },
-
-  mounted() {
-    if (this.memberList.length === 0) {
-      this.$store.commit('ui/addMember', this.loggedInProfile)
-    }
-
   }
-
 
 })
 

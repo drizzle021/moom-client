@@ -81,29 +81,30 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
 
   async revokeUser({ dispatch }, user: string){
-    const response = await channelService.in(this.state.channels!.active!)?.revokeUser(this.state.channels!.active!, user)
-    if (response) {
-      if ('error' in response) {
-        console.log(response)
-      }
-      if ('success' in response) {
-        return { message: 'Successfully revoked user ' + user }
-      }
-    }
+    const response = await activityService.revokeUser(this.state.channels!.active!, user)
+    // if (response) {
+    //   if ('error' in response) {
+    //     console.log(response)
+    //   }
+    //   if ('success' in response) {
+    //     return { message: 'Successfully revoked user ' + user }
+    //   }
+    // }
+    
     await dispatch('selectChannel', this.state.channels!.active)
   },
 
   async kickUser({ dispatch }, user: string){
-    const response = await channelService.in(this.state.channels!.active!)?.kickUser(this.state.channels!.active!, user)
-    if (response) {
-      if ('error' in response) {
-        console.log(response)
-      }
-      if ('success' in response) {
-        console.log('success kick')
-        return { message: 'Successfully kicked user ' + user }
-      }
-    }
+    const response = await activityService.kickUser(this.state.channels!.active!, user)
+    // if (response) {
+    //   if ('error' in response) {
+    //     console.log(response)
+    //   }
+    //   if ('success' in response) {
+    //     console.log('success kick')
+    //     return { message: 'Successfully kicked user ' + user }
+    //   }
+    // }
     await dispatch('selectChannel', this.state.channels!.active)
   },
 
@@ -213,6 +214,10 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       channelService.leave(c)
       commit('CLEAR_CHANNEL', c)
     })
+  },
+
+  async leaveChannel({ state }, channel: string){
+    channelService.leave(channel)
   },
 
   async addMessage({ commit, dispatch }, { channel, message }: { channel: string; message: RawMessage }) {
@@ -357,17 +362,6 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     }
   },
-
-  // case 'quit': {
-  //   const channelToDelete = await handleQuit(state, commandArguments)
-  //   openConfirmDialog(
-  //     `Are you sure you want to delete ${channelToDelete}?`,
-  //     async () => {
-  //       await channelService.in(channelToDelete)?.deleteChannel(channelToDelete)
-  //     })
-  //   break
-  // }
-
 
 
   async inviteMember ({ dispatch }, user) {

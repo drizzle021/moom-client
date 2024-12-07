@@ -1,9 +1,9 @@
 import { RawMessage, SerializedMessage } from 'src/contracts'
 import { BootParams, SocketManager } from './SocketManager'
-import type { Channel, TypedMessage, User } from 'src/contracts'
+import type { Channel, User } from 'src/contracts'
 import { api } from 'src/boot/axios'
 import { AxiosResponse } from 'axios'
-import auth from 'src/boot/auth'
+import { showNotification } from 'src/utils'
 
 // creating instance of this class automatically connects to given socket.io namespace
 // subscribe is called with boot params, so you can use it to dispatch actions for socket events
@@ -14,6 +14,9 @@ class ChannelSocketManager extends SocketManager {
 
     this.socket.on('message', (message: SerializedMessage) => {
       store.commit('channels/NEW_MESSAGE', { channel, message })
+      const user = store.state.auth.user as User
+
+      showNotification(`new Message from ${message.author.nickname}`, user, store.state.auth.userState, store.state.ui.notifPref, message.content)
     })
 
     
@@ -22,28 +25,10 @@ class ChannelSocketManager extends SocketManager {
         store.commit('channels/USER_JOINED', { channel, user })
       }
     })
-    
-    this.socket.on('userLeft', async () => {
-      console.log('left left')
-      // console.log(user)
-      // console.log(user.id)
-      // console.log(channel)
-      // console.log(channel.name)
-      // if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users) {
-      //   store.commit('channels/USER_LEFT', { channel: channel.name, user })
-      // }
-      // console.log('HOAX')
-      // console.log(user.id)
-      // console.log(store.state.auth.user!.id)
-      // if (user.id === store.state.auth.user!.id) {
-      //   console.log('anyadpicsaja')
-      //   store.commit('channels/CLEAR_CHANNEL', { channel: channel })
-      // }
-    })  
 
     this.socket.on('channelDeleted', async () => {
-      store.commit('channels/CLEAR_CHANNEL', { channel: channel })
-      // await store.dispatch('chat/leaveChannelAction', { channel, emit: false })
+      store.commit('channels/CLEAR_CHANNEL', channel)
+      await store.dispatch('channels/leaveChannel', channel)
     })
     
     this.socket.on('typing', (response) => {
@@ -81,20 +66,6 @@ class ChannelSocketManager extends SocketManager {
 
   public async inviteUser (channel: string, user: string): Promise<User> {
     return await this.emitAsync('inviteUser', channel, user)
-  }
-
-  // VALAHOGY MASHOGY VAN ELKULDVE MINT AZ INVITE ES LEHET UGY KELLENE ENNEK IS MUKODNIE HOGY INSTANT KAPJON RESPONSEOT ES REFRESHELJEN
-  public revokeUser (channel: string, user: string): Promise<void> {
-    return this.emitAsync('revokeUser', channel, user)
-  }
-
-  public async kickUser (channel: string, user: string): Promise<void> {
-    try {
-      return this.emitAsync('kickUser', channel, user)
-    } catch (error) {
-      console.error('Error in kickUser:', error)
-      throw error
-    }
   }
 
   async currentlyTyping (message: string): Promise<void>{

@@ -5,6 +5,7 @@ export interface ExampleStateInterface {
   channelsDrawerState: boolean;
   userProfileState: boolean;
   userProfileSelected: null| User;
+  notifPref: boolean;
   channelList: Channel[];
   memberList: User[];
   message: string;
@@ -19,6 +20,7 @@ function state(): ExampleStateInterface {
     message: '',
     userProfileState: false,
     userProfileSelected: null,
+    notifPref: false,
     channelList: [],
     memberList: [],
     typingDialogState: false,

@@ -12,10 +12,12 @@
             >
 
 
-            <q-badge class="profile-badge"
-              :color="userState == 'ONLINE' ? 'green-7' : userState == 'OFFLINE' ? 'grey-7' : 'red-7'">
-              {{ userState == 'ONLINE' ? 'Online' : userState == 'OFFLINE' ? 'Offline' : 'DND' }}
-            </q-badge>
+            <q-badge class="profile-badge" v-if="selectedUser.name!=currentUser.name" :color="userStates[selectedUser.nickname] == 'ONLINE' ? 'green-7' : userStates[member.nickname] == 'DND' ? 'red-7' : 'grey-7'">
+            {{ userStates[selectedUser.nickname] == 'ONLINE' ? 'Online' : userStates[selectedUser.nickname] == 'DND' ? 'DnD' : 'Offline' }}
+          </q-badge>
+          <q-badge class="profile-badge" v-else :color="userState == 'ONLINE' ? 'green-7' : userState == 'DND' ? 'red-7' : 'grey-7'">
+            {{ userState == 'ONLINE' ? 'Online' : userState == 'DND' ? 'DnD' : 'Offline' }}
+          </q-badge>
           </div>
 
           <q-file ref="fileInput" @input="handleFile" max-files="1" style="display: none;" />
@@ -67,6 +69,11 @@ export default defineComponent({
     },
     userState() {
       return this.$store.state.auth.userState
+    },
+    userStates: {
+      get() {
+        return this.$store.state.channels.userStates
+      }
     }
   },
   methods: {

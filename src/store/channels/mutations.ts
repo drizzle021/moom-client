@@ -15,19 +15,20 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     state.loading = false
     state.error = error
   },
-  CLEAR_CHANNEL(state, channel) {
+  CLEAR_CHANNEL(state, channel: string) {
     state.active = ''
-    console.log(channel)
-    console.log(channel.name)
-    console.log(channel.channel)
     delete state.messages[channel]
     delete state.users[channel]
-    state.channels = state.channels.filter(c => c.name !== channel)
-    // state.channels = state.channels.filter(c => {
-    //   console.log('Channel object:', c)
-    //   console.log('Channel name:', c.name)
-    //   return c.name === channel.channel
-    // })
+
+    const newChannels = [] as Channel[]
+  
+    for (const c of state.channels){
+      if (c.name !== channel){
+        newChannels.push(c)
+      }
+    }
+
+    state.channels = newChannels
   },
   SET_ACTIVE(state, channel: string) {
     state.active = channel
