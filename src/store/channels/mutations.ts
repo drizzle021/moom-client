@@ -1,4 +1,4 @@
-import { SerializedMessage, Channel, User } from 'src/contracts'
+import { SerializedMessage, Channel, User, TypedMessage } from 'src/contracts'
 import { MutationTree } from 'vuex'
 import { ChannelsStateInterface } from './state'
 
@@ -33,7 +33,7 @@ const mutation: MutationTree<ChannelsStateInterface> = {
     state.loading = false
     state.messages[channel] = messages
     state.users[channel] = users
-    // state.currentlyTypedMessages[channel] = {}
+    state.typedMessages[channel] = {}
   },
   NEW_CHANNEL(state, channel: Channel) {
     state.channels.unshift(channel)
@@ -57,7 +57,11 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
   SET_HAS_MORE_PAGES(state, hasMorePages: boolean){
     state.hasMorePages = hasMorePages  
+  },
+  SET_TYPED_MESSAGE(state, { channel, message } : { channel: string, message: TypedMessage }){
+    state.typedMessages[channel][message.author.nickname] = message
   }
+  
 
 
 }

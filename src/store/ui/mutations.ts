@@ -15,6 +15,9 @@ const mutation: MutationTree<ExampleStateInterface> = {
   toggleTypingDialog(state:ExampleStateInterface){
     state.typingDialogState = !state.typingDialogState
   },
+  SET_TYPING(state, isTyping){
+    state.usersTyping = isTyping
+  },
 
   setMessage(state:ExampleStateInterface, message){
     state.message = message

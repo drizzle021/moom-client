@@ -1,6 +1,6 @@
 import { RawMessage, SerializedMessage } from 'src/contracts'
 import { BootParams, SocketManager } from './SocketManager'
-import type { Channel, User } from 'src/contracts'
+import type { Channel, TypedMessage, User } from 'src/contracts'
 import { api } from 'src/boot/axios'
 import { AxiosResponse } from 'axios'
 
@@ -20,6 +20,14 @@ class ChannelSocketManager extends SocketManager {
       if (user.id !== store.state.auth.user!.id) {
         store.commit('channels/USER_JOINED', { channel, user })
       }
+    })
+
+    this.socket.on('typing', (response) => {
+      store.commit('channels/SET_TYPED_MESSAGE', { channel: response.channel, message: response.message })
+      if (store.state.channels.active === channel){
+        store.commit('ui/SET_TYPING', true)
+      }
+
     })
 
   }
@@ -66,6 +74,10 @@ class ChannelSocketManager extends SocketManager {
       throw error // Re-throw if you want the caller to handle it
     }
     // return this.emitAsync('kickUser', channel, user, isRevoke)
+  }
+
+  async currentlyTyping (message: string): Promise<void>{
+    return this.emitAsync('currentlyTyping', message)
   }
 }
 
@@ -114,6 +126,7 @@ class ChannelService {
     const response: AxiosResponse<Channel[]> = await api.get('/channels')
     return response.data
   }
+  
 
 }
 

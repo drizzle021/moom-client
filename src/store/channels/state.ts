@@ -1,4 +1,4 @@
-import { SerializedMessage, Channel, User } from 'src/contracts'
+import { SerializedMessage, Channel, User, TypedMessage } from 'src/contracts'
 
 
 export interface ChannelsStateInterface {
@@ -11,6 +11,7 @@ export interface ChannelsStateInterface {
   userStates:{[nickname: string]: string}
   page: number
   hasMorePages: boolean
+  typedMessages: {[channel: string] : {[user: string] : TypedMessage}}
 }
 
 function state(): ChannelsStateInterface {
@@ -23,7 +24,8 @@ function state(): ChannelsStateInterface {
     users: {},
     userStates: {},
     page: 1,
-    hasMorePages: false
+    hasMorePages: false,
+    typedMessages: {}
   }
 }
 

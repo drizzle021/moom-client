@@ -28,20 +28,18 @@ class ActivitySocketManager extends SocketManager {
       console.log('invited Joined')
 
       let check = false
-
+      if (user.id === store.state.auth.user!.id &&
+        !(channel.name in store.state.channels.users)
+      ){
+        store.commit('channels/NEW_CHANNEL', channel)
+        channelService.join(channel.name)
+        return
+      }
       for (const u of store.state.channels.users[channel.name]){
         if (u.nickname === user.nickname){
           check = true
         }
-      }
-
-      if (user.id === store.state.auth.user!.id &&
-          !(channel.name in store.state.channels.users)
-      )
-      {
-        store.commit('channels/NEW_CHANNEL', channel)
-        channelService.join(channel.name)
-      }
+      }   
 
       if (
         user.id !== store.state.auth.user!.id &&

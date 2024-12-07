@@ -9,6 +9,7 @@ export interface ExampleStateInterface {
   memberList: User[];
   message: string;
   typingDialogState: boolean;
+  usersTyping: boolean;
 }
 
 function state(): ExampleStateInterface {
@@ -20,7 +21,8 @@ function state(): ExampleStateInterface {
     userProfileSelected: null,
     channelList: [],
     memberList: [],
-    typingDialogState: false
+    typingDialogState: false,
+    usersTyping: false
 
 }
 }

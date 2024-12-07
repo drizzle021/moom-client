@@ -385,6 +385,10 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
     const msgMeta = response.data.meta
     commit('SET_HAS_MORE_PAGES', msgMeta.next_page_url != null)
 
+  },
+
+  async userTyping({ state }, message){
+    await channelService.in(state.active)?.currentlyTyping(message)
   }
 
 
