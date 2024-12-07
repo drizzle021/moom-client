@@ -1,6 +1,6 @@
 import { RawMessage, SerializedMessage } from 'src/contracts'
 import { BootParams, SocketManager } from './SocketManager'
-import type { Channel, User } from 'src/contracts'
+import type { Channel, TypedMessage, User } from 'src/contracts'
 import { api } from 'src/boot/axios'
 import { AxiosResponse } from 'axios'
 import auth from 'src/boot/auth'
@@ -22,7 +22,6 @@ class ChannelSocketManager extends SocketManager {
         store.commit('channels/USER_JOINED', { channel, user })
       }
     })
-
     
     this.socket.on('userLeft', async () => {
       console.log('left left')
@@ -45,6 +44,13 @@ class ChannelSocketManager extends SocketManager {
     this.socket.on('channelDeleted', async () => {
       store.commit('channels/CLEAR_CHANNEL', { channel: channel })
       // await store.dispatch('chat/leaveChannelAction', { channel, emit: false })
+    })
+    
+    this.socket.on('typing', (response) => {
+      store.commit('channels/SET_TYPED_MESSAGE', { channel: response.channel, message: response.message })
+      if (store.state.channels.active === channel){
+        store.commit('ui/SET_TYPING', true)
+      }
     })
 
   }
@@ -89,6 +95,10 @@ class ChannelSocketManager extends SocketManager {
       console.error('Error in kickUser:', error)
       throw error
     }
+  }
+
+  async currentlyTyping (message: string): Promise<void>{
+    return this.emitAsync('currentlyTyping', message)
   }
 }
 
@@ -137,6 +147,7 @@ class ChannelService {
     const response: AxiosResponse<Channel[]> = await api.get('/channels')
     return response.data
   }
+  
 
 }
 

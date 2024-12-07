@@ -36,7 +36,8 @@
           </template>
           <template v-slot:hint v-if="isTyping" >
             <div @click="openTyping">
-              {{ "user is typing..." }}
+              {{ typers }} currently typing...
+
             </div>
             
           </template>
@@ -84,8 +85,6 @@ export default defineComponent({
 
       loading: false as boolean,
 
-
-      isTyping: true as boolean,
       typingTimeout: null as number | null
     }
   },
@@ -93,7 +92,7 @@ export default defineComponent({
   computed: {
     ...mapGetters('channels', {
       channels: 'joinedChannels',
-      lastMessageOf: 'lastMessageOf'
+      typers: 'currentTypers'
     }),
 
     activeChannel() {
@@ -104,6 +103,9 @@ export default defineComponent({
     },
     typingDialog() {
       return this.$store.state.ui.typingDialogState
+    },
+    isTyping() {
+      return this.$store.state.ui.usersTyping
     }
 
   },
@@ -137,8 +139,8 @@ export default defineComponent({
     ...mapMutations('channels', {
       setActiveChannel: 'SET_ACTIVE'
     }),
-    ...mapActions('channels', ['addMessage'])
-  },
+    ...mapActions('channels', ['addMessage', 'userTyping']),
+  
 
 
 
@@ -153,30 +155,41 @@ export default defineComponent({
 
     }
 
+  },
+
+
+  async handleTyping() {
+    if (this.typingTimeout !== null) {
+      clearTimeout(this.typingTimeout)
+    }
+
+    this.$store.commit('ui/SET_TYPING', true)
+
+    this.userTyping(this.message)
+
+    // Set a delay to hide "is typing" message after user stops typing
+    this.typingTimeout = window.setTimeout(() => {
+      this.$store.commit('ui/SET_TYPING', false)
+    }, 2000) // 1 second delay after user stops typing
   }
-
-
-  // handleTyping() {
-  //   if (this.typingTimeout !== null) {
-  //     clearTimeout(this.typingTimeout)
-  //   }
-
-  //   this.isTyping = true
-
-  //   // Set a delay to hide "is typing" message after user stops typing
-  //   this.typingTimeout = window.setTimeout(() => {
-  //     this.isTyping = false
-  //   }, 1000) // 1 second delay after user stops typing
-  // }
+},
 
 
 
 
-  // watch: {
-  //   text() {
-  //     this.handleTyping()
-  //   }
-  // }
+
+  watch: {
+    message() {
+      this.handleTyping()
+      if (this.message.trim() === ''){
+        this.$store.commit('ui/SET_TYPING', false)
+      }
+      
+    },
+    activeChannel(){
+      this.message = ''
+    }
+  }
 
 
 

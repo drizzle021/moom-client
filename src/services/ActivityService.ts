@@ -25,28 +25,20 @@ class ActivitySocketManager extends SocketManager {
     })
 
     this.socket.on('userInvited', (user: User, channel: Channel, isrevoke: boolean) => {
-      console.log('invited Joined')
-      console.log('fasza')
-      // let check = false
 
-      // console.log(store.state.channels.users[channel.name])
-      // for (const u of store.state.channels.users[channel.name]){
-      //   if (u.nickname === user.nickname){
-      //     check = true
-      //   }
-      // }
-
-      if (user.id === store.state.auth.user!.id && !(channel.name in store.state.channels.users) && !isrevoke){
+      let check = false
+      if (user.id === store.state.auth.user!.id &&
+        !(channel.name in store.state.channels.users)
+      ){
         store.commit('channels/NEW_CHANNEL', channel)
-        // channelService.join(channel.name)
+        channelService.join(channel.name)
+        return
       }
-
-      
-      if (user.id === store.state.auth.user!.id && channel.name in store.state.channels.users && isrevoke){
-        console.log('clear')
-        store.commit('channels/CLEAR_CHANNEL', { channel: channel })
-        // channelService.join(channel.name)
-      }
+      for (const u of store.state.channels.users[channel.name]){
+        if (u.nickname === user.nickname){
+          check = true
+        }
+      }   
 
       if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users){
         store.commit('channels/USER_JOINED', { channel: channel.name, user })
