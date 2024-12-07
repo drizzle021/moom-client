@@ -6,7 +6,7 @@
     <q-item clickable @click="mentionUser">
       <q-item-section>Mention</q-item-section>
     </q-item>
-    <q-item clickable>
+    <q-item clickable @click ="revokeMember">
       <q-item-section>Revoke</q-item-section>
     </q-item>
     <q-item clickable @click="kickMember">
@@ -21,6 +21,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { mapActions } from 'vuex'
 
 
 export default defineComponent({
@@ -41,6 +42,8 @@ export default defineComponent({
   },
 
   methods: {
+    ...mapActions('channels', ['revokeUser', 'kickUser']),
+
     openProfile() {
       this.$store.commit('ui/switchUserProfile', this.user)
       this.$store.commit('ui/toggleUserProfile')
@@ -48,8 +51,11 @@ export default defineComponent({
     mentionUser() {
       console.log(this.user.name)
     },
-    kickMember() {
-      this.$store.commit('ui/kickMember', this.user)
+    async kickMember() {
+      await this.kickUser(this.user.name)
+    },
+    async revokeMember(){
+      await this.revokeUser(this.user.name)
     }
   }
 
