@@ -67,14 +67,17 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { RouteLocationRaw } from 'vue-router'
+import { RouteLocationRaw, useRouter } from 'vue-router'
+
 
 export default defineComponent({
     name: 'RegisterPage',
     data() {
+        const router = useRouter()
         return {
             form: { name: '', nickname: '', surname: '', email: '', password: '', passwordConfirmation: '', icon: null },
-            tab: 'register'
+            tab: 'register',
+            router
         }
     },
     computed: {
@@ -100,7 +103,7 @@ export default defineComponent({
 
             try {
                 await this.$store.dispatch('auth/register', formData)
-                this.$router.push(this.redirectTo)
+                this.router.push(this.redirectTo)
             } 
             catch (error) {
                 console.error('Registration error:', error)

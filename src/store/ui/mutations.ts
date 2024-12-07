@@ -16,7 +16,6 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.typingDialogState = !state.typingDialogState
   },
   SET_NOTIFS(state:ExampleStateInterface, newState){
-    console.log(newState)
     state.notifPref = newState
   },
   SET_TYPING(state:ExampleStateInterface, isTyping){

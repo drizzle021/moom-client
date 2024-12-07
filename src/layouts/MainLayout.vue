@@ -144,20 +144,6 @@ export default defineComponent({
 
 
 
-
-  messageNotif(from: string, text: string) {
-    if (this.$q.appVisible) {
-      this.$q.notify({
-        message: from,
-        caption: text,
-        color: 'secondary'
-      })
-
-    }
-
-  },
-
-
   async handleTyping() {
     if (this.typingTimeout !== null) {
       clearTimeout(this.typingTimeout)

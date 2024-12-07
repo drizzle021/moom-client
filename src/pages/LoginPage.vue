@@ -44,23 +44,27 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { RouteLocationRaw } from 'vue-router'
+import { RouteLocationRaw, useRouter, useRoute } from 'vue-router'
 
 export default defineComponent({
 
   name: 'LoginPage',
   data() {
+    const router = useRouter()
+    const route = useRoute()
     return {
       form: { nickname: '', email: '', password: '', name: '', surname: '' },
       credentials: { email: '', password: '' },
       file: null,
-      tab: 'login'
+      tab: 'login',
+      router,
+      route
     }
   },
 
   computed: {
     redirectTo(): RouteLocationRaw {
-      return (this.$route.query.redirect as string) || { name: 'chat' }
+      return (this.route.query.redirect as string) || { name: 'chat' }
     },
     loading(): boolean {
       return this.$store.state.auth.status === 'pending'
@@ -69,7 +73,7 @@ export default defineComponent({
 
   methods: {
     onSubmit() {
-      this.$store.dispatch('auth/login', this.credentials).then(() => this.$router.push(this.redirectTo))
+      this.$store.dispatch('auth/login', this.credentials).then(() => this.router.push(this.redirectTo))
     }
   }
 })

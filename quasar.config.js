@@ -169,6 +169,15 @@ module.exports = configure(function (ctx) {
       swFilename: 'sw.js',
       manifestFilename: 'manifest.json',
       useCredentialsForManifestTag: false,
+      manifest: {
+        icons: [
+          {
+            src: 'public/icons/icon-128x128.png',
+            sizes: '128x128',
+            type: 'image/png'         
+          }
+        ]
+      }
       // useFilenameHashes: true,
       // extendGenerateSWOptions (cfg) {}
       // extendInjectManifestOptions (cfg) {},

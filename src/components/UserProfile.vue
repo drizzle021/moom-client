@@ -12,7 +12,7 @@
             >
 
 
-            <q-badge class="profile-badge" v-if="selectedUser.name!=currentUser.name" :color="userStates[selectedUser.nickname] == 'ONLINE' ? 'green-7' : userStates[member.nickname] == 'DND' ? 'red-7' : 'grey-7'">
+            <q-badge class="profile-badge" v-if="selectedUser.name!=currentUser.name" :color="userStates[selectedUser.nickname] == 'ONLINE' ? 'green-7' : userStates[selectedUser.nickname] == 'DND' ? 'red-7' : 'grey-7'">
             {{ userStates[selectedUser.nickname] == 'ONLINE' ? 'Online' : userStates[selectedUser.nickname] == 'DND' ? 'DnD' : 'Offline' }}
           </q-badge>
           <q-badge class="profile-badge" v-else :color="userState == 'ONLINE' ? 'green-7' : userState == 'DND' ? 'red-7' : 'grey-7'">
