@@ -24,8 +24,7 @@ class ActivitySocketManager extends SocketManager {
       store.commit('channels/SET_STATES', { user: user.name, userState: 'DND' })
     })
 
-    this.socket.on('userInvited', (user: User, channel: Channel) => {
-      console.log('invited Joined')
+    this.socket.on('userInvited', (user: User, channel: Channel, isrevoke: boolean) => {
 
       let check = false
       if (user.id === store.state.auth.user!.id &&
@@ -41,16 +40,12 @@ class ActivitySocketManager extends SocketManager {
         }
       }   
 
-      if (
-        user.id !== store.state.auth.user!.id &&
-        channel.name in store.state.channels.users &&
-        !check
-      ) {
+      if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users){
         store.commit('channels/USER_JOINED', { channel: channel.name, user })
       }
+
+
     })
-
-
 
     authManager.onChange((token) => {
       if (token) {

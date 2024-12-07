@@ -3,6 +3,7 @@ import { BootParams, SocketManager } from './SocketManager'
 import type { Channel, TypedMessage, User } from 'src/contracts'
 import { api } from 'src/boot/axios'
 import { AxiosResponse } from 'axios'
+import auth from 'src/boot/auth'
 
 // creating instance of this class automatically connects to given socket.io namespace
 // subscribe is called with boot params, so you can use it to dispatch actions for socket events
@@ -21,13 +22,35 @@ class ChannelSocketManager extends SocketManager {
         store.commit('channels/USER_JOINED', { channel, user })
       }
     })
+    
+    this.socket.on('userLeft', async () => {
+      console.log('left left')
+      // console.log(user)
+      // console.log(user.id)
+      // console.log(channel)
+      // console.log(channel.name)
+      // if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users) {
+      //   store.commit('channels/USER_LEFT', { channel: channel.name, user })
+      // }
+      // console.log('HOAX')
+      // console.log(user.id)
+      // console.log(store.state.auth.user!.id)
+      // if (user.id === store.state.auth.user!.id) {
+      //   console.log('anyadpicsaja')
+      //   store.commit('channels/CLEAR_CHANNEL', { channel: channel })
+      // }
+    })  
 
+    this.socket.on('channelDeleted', async () => {
+      store.commit('channels/CLEAR_CHANNEL', { channel: channel })
+      // await store.dispatch('chat/leaveChannelAction', { channel, emit: false })
+    })
+    
     this.socket.on('typing', (response) => {
       store.commit('channels/SET_TYPED_MESSAGE', { channel: response.channel, message: response.message })
       if (store.state.channels.active === channel){
         store.commit('ui/SET_TYPING', true)
       }
-
     })
 
   }
@@ -60,20 +83,18 @@ class ChannelSocketManager extends SocketManager {
     return await this.emitAsync('inviteUser', channel, user)
   }
 
+  // VALAHOGY MASHOGY VAN ELKULDVE MINT AZ INVITE ES LEHET UGY KELLENE ENNEK IS MUKODNIE HOGY INSTANT KAPJON RESPONSEOT ES REFRESHELJEN
   public revokeUser (channel: string, user: string): Promise<void> {
     return this.emitAsync('revokeUser', channel, user)
   }
 
-  public async kickUser (channel: string, user: string, isRevoke: boolean): Promise<any> {
-    
+  public async kickUser (channel: string, user: string): Promise<void> {
     try {
-      console.log('trying to kick user: ' + user + ' from channel: ' + channel)
-      return await this.emitAsync('kickUser', channel, user)
+      return this.emitAsync('kickUser', channel, user)
     } catch (error) {
       console.error('Error in kickUser:', error)
-      throw error // Re-throw if you want the caller to handle it
+      throw error
     }
-    // return this.emitAsync('kickUser', channel, user, isRevoke)
   }
 
   async currentlyTyping (message: string): Promise<void>{

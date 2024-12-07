@@ -17,7 +17,17 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
   CLEAR_CHANNEL(state, channel) {
     state.active = ''
+    console.log(channel)
+    console.log(channel.name)
+    console.log(channel.channel)
     delete state.messages[channel]
+    delete state.users[channel]
+    state.channels = state.channels.filter(c => c.name !== channel)
+    // state.channels = state.channels.filter(c => {
+    //   console.log('Channel object:', c)
+    //   console.log('Channel name:', c.name)
+    //   return c.name === channel.channel
+    // })
   },
   SET_ACTIVE(state, channel: string) {
     state.active = channel
@@ -41,6 +51,10 @@ const mutation: MutationTree<ChannelsStateInterface> = {
 
   USER_JOINED (state, { channel, user }: { channel: string, user: User }) {
     state.users[channel].push(user)
+  },
+
+  USER_LEFT (state, { channel, user }: { channel: string, user: User }) {
+    state.users[channel] = state.users[channel].filter(u => u.id !== user.id)
   },
 
   SET_STATES(state, { user, userState }: { user: string, userState: string }) {

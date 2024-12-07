@@ -80,13 +80,43 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
   },
 
 
+  async revokeUser({ dispatch }, user: string){
+    const response = await channelService.in(this.state.channels!.active!)?.revokeUser(this.state.channels!.active!, user)
+    if (response) {
+      if ('error' in response) {
+        console.log(response)
+      }
+      if ('success' in response) {
+        return { message: 'Successfully revoked user ' + user }
+      }
+    }
+    await dispatch('selectChannel', this.state.channels!.active)
+  },
+
+  async kickUser({ dispatch }, user: string){
+    const response = await channelService.in(this.state.channels!.active!)?.kickUser(this.state.channels!.active!, user)
+    if (response) {
+      if ('error' in response) {
+        console.log(response)
+      }
+      if ('success' in response) {
+        console.log('success kick')
+        return { message: 'Successfully kicked user ' + user }
+      }
+    }
+    await dispatch('selectChannel', this.state.channels!.active)
+  },
+
   async createOrJoinChannel({ dispatch }, channel: { name: string, is_private: boolean }) {
     const response = (await api.get(`/channels/${channel.name}/check`)).data
 
       if (response){
+        // maybe useless
+        if ('error' in response) {
+          console.log(response)
+        }
 
         if ('success' in response){
-
           const createNew = !response.channel
 
           if (createNew){
@@ -278,29 +308,12 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
     // /revoke nickName
     if (commandType === 'revoke'){  
-      const response = await channelService.in(this.state.channels!.active!)?.revokeUser(this.state.channels!.active!, channelOrUserName)
-      if (response) {
-        // if ('error' in response) {
-        //   throw new ValidationException(response.error)
-        // }
-        if ('success' in response) {
-          return { message: 'Successfully revoked user ' + channelOrUserName }
-        }
-      }
-      await dispatch('selectChannel', this.state.channels!.active)
+      await dispatch('revokeUser', channelOrUserName)
     }
 
     // /kick nickName
     if (commandType === 'kick'){  
-      const response = await channelService.in(this.state.channels!.active!)?.kickUser(this.state.channels!.active!, channelOrUserName, false)
-      if (response) {
-        // if ('error' in response) {
-        //   throw new ValidationException(response.error)
-        // }
-        if ('success' in response) {
-          return { message: 'Successfully kicked user ' + channelOrUserName }
-        }
-      }
+      await dispatch('kickUser', channelOrUserName)
     }
 
 
