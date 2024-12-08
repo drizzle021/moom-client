@@ -55,6 +55,7 @@ const mutation: MutationTree<ChannelsStateInterface> = {
   },
 
   USER_LEFT (state, { channel, user }: { channel: string, user: User }) {
+    console.log('1213')
     state.users[channel] = state.users[channel].filter(u => u.id !== user.id)
   },
 

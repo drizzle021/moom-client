@@ -187,7 +187,7 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
 
       }
       if (!isAdmin){
-        await channelService.in(channel)?.leaveChannel(channel)
+        await activityService.leaveChannel(channel)
         const channels = await channelService.getChannel()
         commit('SET_CHANNELS', channels)
         if (this.state.channels.active === channel) {
@@ -336,7 +336,9 @@ const actions: ActionTree<ChannelsStateInterface, StateInterface> = {
       }
       // MEMBER JUST LEAVES CHANNEL WITH CANCEL
       if (!isAdmin){
-        await channelService.in(channelOrUserName)?.leaveChannel(channelOrUserName)
+        channelService.leave(channelOrUserName)
+        await activityService.leaveChannel(channelOrUserName)
+
       }
 
       const channels = await channelService.getChannel()

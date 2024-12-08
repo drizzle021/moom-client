@@ -26,8 +26,18 @@ class ActivitySocketManager extends SocketManager {
 
     this.socket.on('userInvited', (user: User, channel: Channel) => {
       let check = false
-      if (user.id === store.state.auth.user!.id 
-   
+      let channelCheck = false
+
+      for (const c of store.state.channels.channels){
+        if (c.name === channel.name){
+          channelCheck = true
+        }
+      }
+
+
+      if (user.id === store.state.auth.user!.id &&
+        !channelCheck
+        
       ){
         store.commit('channels/NEW_CHANNEL', channel)
         channelService.join(channel.name)
@@ -41,7 +51,7 @@ class ActivitySocketManager extends SocketManager {
         }   
       }
 
-      if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users){
+      if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users && !check){
         store.commit('channels/USER_JOINED', { channel: channel.name, user })
       }
 
@@ -49,7 +59,6 @@ class ActivitySocketManager extends SocketManager {
     })
 
     this.socket.on('userLeft', (user: User, channel: Channel) => {
-
       if (user.id !== store.state.auth.user!.id && channel.name in store.state.channels.users) {
         store.commit('channels/USER_LEFT', { channel: channel.name, user })
       }
@@ -82,6 +91,10 @@ class ActivitySocketManager extends SocketManager {
    // VALAHOGY MASHOGY VAN ELKULDVE MINT AZ INVITE ES LEHET UGY KELLENE ENNEK IS MUKODNIE HOGY INSTANT KAPJON RESPONSEOT ES REFRESHELJEN
   public revokeUser (channel: string, user: string): Promise<void> {
     return this.emitAsync('revokeUser', channel, user)
+  }
+  
+  public leaveChannel (channel: string): Promise<void> {
+    return this.emitAsync('leaveChannel', channel)
   }
 
   public async kickUser (channel: string, user: string): Promise<void> {

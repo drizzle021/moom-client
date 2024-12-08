@@ -37,6 +37,7 @@ class ChannelSocketManager extends SocketManager {
         store.commit('ui/SET_TYPING', true)
       }
     })
+    
 
   }
 
@@ -60,17 +61,14 @@ class ChannelSocketManager extends SocketManager {
     return this.emitAsync('deleteChannel', channel)
   }
 
-  public leaveChannel (channel: string): Promise<void> {
-    return this.emitAsync('leaveChannel', channel)
-  }
-
-  public async inviteUser (channel: string, user: string): Promise<User> {
-    return await this.emitAsync('inviteUser', channel, user)
+  public inviteUser (channel: string, user: string): Promise<User> {
+    return this.emitAsync('inviteUser', channel, user)
   }
 
   async currentlyTyping (message: string): Promise<void>{
     return this.emitAsync('currentlyTyping', message)
   }
+  
 }
 
 class ChannelService {
